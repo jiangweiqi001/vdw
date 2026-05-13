@@ -610,6 +610,56 @@ class EftPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(rows[0]["osc"], 2.0)
         self.assertEqual(rows[0]["source"], "PySCF_TDHF")
 
+    def test_tdhf_nstates_convergence_row_includes_errors_and_sum_rule(self):
+        from run_tdhf_nstates_convergence_ar import summarize_nstates_result
+
+        summary = summarize_nstates_result(
+            basis="aug-cc-pVTZ",
+            nstates=100,
+            tdhf_summary={"sum_osc": 9.0, "n_channels": 3},
+            comparison={
+                "alpha0_eft": 10.0,
+                "C6_eft": 60.0,
+                "err_alpha_pct": -10.0,
+                "err_C6_pct": -5.0,
+            },
+            n_electrons=18.0,
+        )
+
+        self.assertEqual(summary["basis"], "aug-cc-pVTZ")
+        self.assertEqual(summary["nstates"], 100)
+        self.assertAlmostEqual(summary["sum_osc"], 9.0)
+        self.assertAlmostEqual(summary["sum_osc_over_N"], 0.5)
+        self.assertAlmostEqual(summary["alpha0_err"], -10.0)
+        self.assertAlmostEqual(summary["C6_err"], -5.0)
+
+    def test_ar2_tail_row_uses_minus_c6_over_r6(self):
+        from run_ar2_tail import tail_row
+
+        row = tail_row(
+            r_bohr=2.0,
+            c6_ref=64.0,
+            c6_tdhf=60.0,
+            c6_mo=80.0,
+            c6_calibrated=64.0,
+        )
+
+        self.assertAlmostEqual(row["E_ref_Ha"], -1.0)
+        self.assertAlmostEqual(row["E_tdhf_Ha"], -60.0 / 64.0)
+        self.assertAlmostEqual(row["err_tdhf_pct"], -6.25)
+        self.assertAlmostEqual(row["err_mo_pct"], 25.0)
+
+    def test_generic_tdhf_atom_channel_rows_from_arrays(self):
+        from run_tdhf_atom import tdhf_rows_from_arrays
+
+        rows = tdhf_rows_from_arrays(atom="Ne", energies=[0.4, 0.8], oscillator_strengths=[0.0, 1.2])
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["atom"], "Ne")
+        self.assertEqual(rows[0]["channel"], "tdhf_002")
+        self.assertAlmostEqual(rows[0]["delta_Ha"], 0.8)
+        self.assertAlmostEqual(rows[0]["osc"], 1.2)
+
     @staticmethod
     def _write_csv(path, fieldnames, rows):
         with open(path, "w", newline="", encoding="utf-8") as fp:
