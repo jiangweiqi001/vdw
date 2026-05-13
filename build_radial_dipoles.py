@@ -66,6 +66,13 @@ def radial_integral(orbital_i, orbital_a, normalize=True):
 
 
 def angular_factor(l_i, l_a):
+    """Shell-averaged Cartesian dipole factor for one occupied shell pair.
+
+    The returned d2 downstream is a shell-averaged value per electron in the
+    occupied shell, not a shell-summed oscillator strength. `build_eft_channels`
+    later multiplies by the occupied shell population when forming
+    f = (2/3) * delta * occupation * d2.
+    """
     if abs(l_a - l_i) != 1:
         return 0.0
     return max(l_i, l_a) / (2.0 * l_i + 1.0)

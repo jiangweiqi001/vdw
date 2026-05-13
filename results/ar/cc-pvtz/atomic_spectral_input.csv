@@ -1,0 +1,13 @@
+atom,orbital,type,n,l,occupation,energy_Ha
+Ar,1s,core,1,0,2,-118.609293738
+Ar,2s,core,2,0,2,-12.3209851668
+Ar,3s,core,3,0,2,-1.27649826786
+Ar,4s,virtual,4,0,0,0.706785473398
+Ar,5s,virtual,5,0,0,5.40274883927
+Ar,2p,core,2,1,6,-9.56992287887
+Ar,3p,core,3,1,6,-0.590136602601
+Ar,4p,virtual,4,1,0,0.550160437289
+Ar,5p,virtual,5,1,0,2.90848200758
+Ar,3d,virtual,3,2,0,0.728879902625
+Ar,4d,virtual,4,2,0,2.54735394438
+Ar,4f,virtual,4,3,0,2.92446327545

@@ -1,9 +1,10 @@
 import csv
+import argparse
 from eft_alpha import alpha0_from_osc, self_c6_from_osc, load_channels_csv
 
 
-def main():
-    data = load_channels_csv("atomic_channels.csv")
+def build_alpha_rows(input_path="atomic_channels.csv"):
+    data = load_channels_csv(input_path)
     rows = []
     for atom in sorted(data.keys()):
         delta = data[atom]["delta"]
@@ -18,16 +19,29 @@ def main():
                 "n_channels": len(delta),
             }
         )
+    return rows
 
-    with open("alpha_c6_table.csv", "w", newline="", encoding="utf-8") as fp:
+
+def write_alpha_rows(path, rows):
+    with open(path, "w", newline="", encoding="utf-8") as fp:
         writer = csv.DictWriter(fp, fieldnames=["atom", "alpha0_au", "C6_self_au", "n_channels"])
         writer.writeheader()
         writer.writerows(rows)
 
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Build alpha0 and self C6 table from atomic channels.")
+    parser.add_argument("--input", default="atomic_channels.csv")
+    parser.add_argument("--output", default="alpha_c6_table.csv")
+    args = parser.parse_args(argv)
+
+    rows = build_alpha_rows(args.input)
+    write_alpha_rows(args.output, rows)
+
     print("atom,alpha0_au,C6_self_au,n_channels")
     for row in rows:
         print(f"{row['atom']},{row['alpha0_au']},{row['C6_self_au']},{row['n_channels']}")
-    print("\nWrote alpha_c6_table.csv")
+    print(f"\nWrote {args.output}")
 
 
 if __name__ == "__main__":
