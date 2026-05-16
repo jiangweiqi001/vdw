@@ -660,6 +660,59 @@ class EftPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(rows[0]["delta_Ha"], 0.8)
         self.assertAlmostEqual(rows[0]["osc"], 1.2)
 
+    def test_noble_gas_summary_row_uses_reference_errors(self):
+        from run_noble_gas_tdhf import summarize_atom_result
+
+        row = summarize_atom_result(
+            atom="Ne",
+            alpha0_ref=2.0,
+            c6_ref=6.0,
+            alpha_row={"alpha0_au": "1.8", "C6_self_au": "5.4", "n_channels": "3"},
+        )
+
+        self.assertEqual(row["atom"], "Ne")
+        self.assertAlmostEqual(row["alpha0_err"], -10.0)
+        self.assertAlmostEqual(row["C6_err"], -10.0)
+
+    def test_ar_c6_method_rows_mark_unavailable_optional_methods(self):
+        from run_ar_c6_method_comparison import method_row
+
+        row = method_row("D4", None, 64.3, "not_available")
+
+        self.assertEqual(row["method"], "D4")
+        self.assertEqual(row["C6_ArAr"], "")
+        self.assertEqual(row["error_pct"], "")
+        self.assertEqual(row["note"], "not_available")
+
+    def test_ne_convergence_summary_handles_unavailable_basis(self):
+        from run_ne_tdhf_convergence import unavailable_row
+
+        row = unavailable_row("aug-cc-pV5Z", 200, "missing basis")
+
+        self.assertEqual(row["atom"], "Ne")
+        self.assertEqual(row["basis"], "aug-cc-pV5Z")
+        self.assertEqual(row["nstates"], 200)
+        self.assertEqual(row["status"], "unavailable")
+        self.assertIn("missing basis", row["note"])
+
+    def test_ne_convergence_summary_row_has_errors(self):
+        from run_ne_tdhf_convergence import summarize_case
+
+        row = summarize_case(
+            basis="aug-cc-pVQZ",
+            nstates=300,
+            alpha0=2.4,
+            c6=5.8,
+            n_channels=10,
+            sum_osc=1.5,
+            alpha0_ref=3.0,
+            c6_ref=6.0,
+        )
+
+        self.assertEqual(row["status"], "ok")
+        self.assertAlmostEqual(row["alpha0_err"], -20.0)
+        self.assertAlmostEqual(row["C6_err"], -100.0 * 0.2 / 6.0)
+
     @staticmethod
     def _write_csv(path, fieldnames, rows):
         with open(path, "w", newline="", encoding="utf-8") as fp:

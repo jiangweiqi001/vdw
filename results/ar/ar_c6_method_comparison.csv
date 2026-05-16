@@ -1,0 +1,7 @@
+method,C6_ArAr,error_pct,note
+reference,64.3,0.0,reference
+calibrated,64.3,0.0,fitted/control
+EFT-MO,76.13748508,18.409774618973575,independent-particle aug-cc-pVQZ
+EFT-TDHF,60.73027908,-5.551665505443227,TDHF aug-cc-pVQZ nstates=200
+D4,,,not_available
+MBD,,,not_available

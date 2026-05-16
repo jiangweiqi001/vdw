@@ -1,6 +1,8 @@
 atom,alpha0_ref,C6_ref,source
+Ne,2.67,6.38,standard all-atom benchmark
 Na,162.7,1556,standard all-atom benchmark
 K,290.0,3897,standard all-atom benchmark
 Mg,71.3,627,standard all-atom benchmark
 Ca,157.1,2221,standard all-atom benchmark
 Ar,11.1,64.3,standard all-atom benchmark
+Kr,16.8,129.6,standard all-atom benchmark
