@@ -1,0 +1,5 @@
+system,method,basis,nstates,valence_partition,semicore_partition,deep_core_partition,C6_all,C6_valence_only,C6_valence_plus_semicore,delta_C6_semicore,relative_delta_pct,note
+Ar,TDHF,aug-cc-pVQZ,200,3s;3p,,1s;2s;2p,60.73027908,61.30817463,60.73027908,-0.5778955500000009,-0.951577,noble-gas core/mixing diagnostic
+Kr,TDHF,aug-cc-pVQZ,200,4s;4p,,1s;2s;2p;3s;3p;3d,121.85826194,125.48140792,121.85826194,-3.6231459799999897,-2.973246,noble-gas core/mixing diagnostic
+Ca,TDHF,cc-pVQZ,200,4s,3s;3p,1s;2s;2p,2759.50968183,2977.54172206,2761.47855918,-216.06316288000016,-7.829766,Ca semicore partition benchmark; aug-cc-pVQZ unavailable in PySCF
+Mg,TDHF,aug-cc-pVQZ,200,3s,2s;2p,1s,757.83551633,772.64572894,757.83785149,-14.807877449999978,-1.95397,Mg semicore partition benchmark

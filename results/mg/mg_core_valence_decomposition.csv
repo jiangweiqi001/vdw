@@ -1,0 +1,8 @@
+component,alpha0,C6,C6_error_pct,n_channels,note
+all,81.24115253,757.83551633,20.866908505582142,33,TDHF transition-dipole projection
+valence,82.16620845,772.64572894,23.228983881977676,33,TDHF transition-dipole projection
+semicore,0.17641878,0.05494368,-99.99123705263159,33,TDHF transition-dipole projection
+deep_core,0.0,0.0,-100.0,0,TDHF transition-dipole projection
+valence_plus_semicore,81.24127402,757.83785149,20.867280939393947,33,TDHF transition-dipole projection
+valence_plus_semicore_plus_deep_core,81.24115253,757.83551633,20.866908505582142,33,TDHF transition-dipole projection
+Delta_C6_semicore,,-14.807877449999978,,,relative_semicore_contribution=-0.01953970

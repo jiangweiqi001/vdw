@@ -713,6 +713,51 @@ class EftPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(row["alpha0_err"], -20.0)
         self.assertAlmostEqual(row["C6_err"], -100.0 * 0.2 / 6.0)
 
+    def test_tdhf_component_rows_can_label_non_ar_atom(self):
+        from pyscf_export_ar_tdhf_decomposed import tdhf_component_rows
+
+        rows = tdhf_component_rows(
+            energies=[1.0],
+            all_dipoles=[[2.0, 0.0, 0.0]],
+            valence_dipoles=[[1.0, 0.0, 0.0]],
+            core_dipoles=[[0.5, 0.0, 0.0]],
+            atom="Kr",
+            min_osc=0.0,
+        )
+
+        self.assertEqual(rows["all"][0]["atom"], "Kr")
+        self.assertEqual(rows["all"][0]["component"], "all")
+        self.assertAlmostEqual(rows["all"][0]["osc"], (2.0 / 3.0) * 4.0)
+        self.assertAlmostEqual(rows["valence"][0]["osc"], (2.0 / 3.0) * 1.0)
+        self.assertAlmostEqual(rows["core"][0]["osc"], (2.0 / 3.0) * 0.25)
+
+    def test_partition_definition_parser_reads_semicolon_shells(self):
+        from run_partition_decomposition import load_partition_definitions
+
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / "partition_definitions.csv"
+            self._write_csv(
+                path,
+                ["atom", "partition", "shells"],
+                [
+                    {"atom": "Ca", "partition": "valence", "shells": "4s"},
+                    {"atom": "Ca", "partition": "semicore", "shells": "3s;3p"},
+                ],
+            )
+
+            partitions = load_partition_definitions(path, "Ca")
+
+        self.assertEqual(partitions["valence"], {"4s"})
+        self.assertEqual(partitions["semicore"], {"3s", "3p"})
+
+    def test_partition_combinations_include_valence_plus_semicore(self):
+        from run_partition_decomposition import partition_combinations
+
+        combos = partition_combinations({"valence": {"4s"}, "semicore": {"3s", "3p"}, "deep_core": {"1s"}})
+
+        self.assertEqual(combos["valence_plus_semicore"], {"4s", "3s", "3p"})
+        self.assertEqual(combos["valence_plus_semicore_plus_deep_core"], {"4s", "3s", "3p", "1s"})
+
     @staticmethod
     def _write_csv(path, fieldnames, rows):
         with open(path, "w", newline="", encoding="utf-8") as fp:

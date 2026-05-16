@@ -57,10 +57,10 @@ Implemented:
 - Calibrated, MO, TDHF, and radial diagnostic routes
 - Ar TDHF benchmark and Ar2 long-range tail
 - Ar basis, TDHF nstates, and oscillator-strength audit tables
+- TDHF core/valence/semicore decomposition for Ar, Kr, Mg, and Ca
 
 Not yet implemented:
 
-- Valence/core decomposition
 - Valence-screened `W_v`
 - RPA/log-determinant many-body energy
 - Periodic systems and forces

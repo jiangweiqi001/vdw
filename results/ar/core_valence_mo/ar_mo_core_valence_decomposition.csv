@@ -1,0 +1,5 @@
+method,component,alpha0,C6,C6_error_pct,n_channels,note
+MO,all,10.08052334,76.13748508,,675,independent-particle channel split
+MO,valence,10.05515207,75.40580406,,300,independent-particle channel split
+MO,core,0.02537127,0.00624729,,375,independent-particle channel split
+MO,Delta_C6_core,,0.73168102,,,relative_core_contribution=0.00961000

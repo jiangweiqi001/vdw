@@ -88,11 +88,11 @@ def double_augmented_basis(symbol="Ar", parent_basis="aug-cc-pVTZ"):
     return augmented
 
 
-def make_ar_molecule(basis):
+def make_atom_molecule(atom, basis):
     try:
-        return gto.M(atom="Ar 0 0 0", basis=basis, spin=0, charge=0, cart=False, verbose=0)
+        return gto.M(atom=f"{atom} 0 0 0", basis=basis, spin=0, charge=0, cart=False, verbose=0)
     except BasisNotFoundError:
-        if basis in {"d-aug-cc-pVTZ", "d-aug-cc-pVTZ-local"}:
+        if atom == "Ar" and basis in {"d-aug-cc-pVTZ", "d-aug-cc-pVTZ-local"}:
             return gto.M(
                 atom="Ar 0 0 0",
                 basis={"Ar": double_augmented_basis("Ar", "aug-cc-pVTZ")},
@@ -101,7 +101,21 @@ def make_ar_molecule(basis):
                 cart=False,
                 verbose=0,
             )
+        if basis.endswith("-aug-local"):
+            parent_basis = basis[: -len("-aug-local")]
+            return gto.M(
+                atom=f"{atom} 0 0 0",
+                basis={atom: double_augmented_basis(atom, parent_basis)},
+                spin=0,
+                charge=0,
+                cart=False,
+                verbose=0,
+            )
         raise
+
+
+def make_ar_molecule(basis):
+    return make_atom_molecule("Ar", basis)
 
 
 def export_ar_radials(

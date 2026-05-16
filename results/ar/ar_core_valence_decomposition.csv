@@ -1,0 +1,12 @@
+method,component,alpha0,C6,C6_error_pct,n_channels,note
+MO,all,10.08052334,76.13748508,18.409774618973575,675,occupied-shell split
+MO,valence,10.05515207,75.40580406,17.271857013996883,300,occupied-shell split
+MO,core,0.02537127,0.00624729,-99.99028415241057,375,occupied-shell split
+MO,Delta_C6_core,,0.7316810200000106,,,relative_core_contribution=0.00961000
+TDHF,all,10.6494114,60.73027908,-5.551665505443227,27,transition-dipole projection
+TDHF,valence,10.6924197,61.30817463,-4.652916594090192,27,transition-dipole projection
+TDHF,core,0.00039724,1.7e-07,-99.9999997356143,27,transition-dipole projection
+TDHF,cross,-0.04340555,0.00142314,-99.99778671850699,27,transition-dipole projection
+TDHF,cross_alpha0,-0.04340554000000033,,,,alpha0_all - alpha0_valence - alpha0_core
+TDHF,cross_C6_effect,,-0.5839732600000005,,,C6_all - C6[valence+core_without_cross]
+TDHF,Delta_C6_core,,-0.5778955500000009,,,relative_core_contribution=-0.00951577; core_only_C6=0.00000017
