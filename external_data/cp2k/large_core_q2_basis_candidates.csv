@@ -1,0 +1,4 @@
+atom,basis_file,basis_name,basis_label,basis_provenance,basis_note
+Ca,external_data/cp2k/BASIS_MOLOPT_UZH,TZV2P-MOLOPT-PBE-GTH-q10,TZV2P-MOLOPT-PBE-GTH-q10-as-q2-adapted,adapted_from_q10,Ca q10 UZH basis tested as a q2 candidate only; not library-native matched q2.
+Sr,external_data/cp2k/BASIS_MOLOPT_UZH,TZV2P-MOLOPT-PBE-GTH-q10,TZV2P-MOLOPT-PBE-GTH-q10-as-q2-adapted,adapted_from_q10,Sr q10 UZH basis tested as a q2 candidate only; not library-native matched q2.
+Sr,external_data/cp2k/BASIS_MOLOPT_UZH,QZVPP-MOLOPT-PBE-GTH-q10,QZVPP-MOLOPT-PBE-GTH-q10-as-q2-adapted,adapted_from_q10,Sr q10 UZH QZVPP basis tested as a q2 candidate only; not library-native matched q2.

@@ -1,0 +1,2 @@
+atom,psp_path,placeholder_path_used,shell_overlap,audit_status,mg_q2_two_electron,psp_active_shell_3s,correction_shells_2s2p,no_shell_overlap,psp_pbe_tddft,all_e_pbe_tddft,placeholder_path_not_used,double_counting_clean
+Mg,results/psp_rpa/mg/GTH-PBE-q2_TZV2P-MOLOPT-SR-GTH-q2_pbe_tddft/mg_psp_channels.csv,false,false,pass,true,true,true,true,true,true,true,true

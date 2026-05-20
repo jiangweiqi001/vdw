@@ -1,0 +1,6 @@
+case_id,atom,C6_psp,C6_psp_plus_dipole,Delta_C6_dipole,n_dipole_channels,correction_shells,psp_explicit_valence_shells,double_counting_status,note
+Be_q2,Be,209.84599821,210.87562603,1.0296278200000017,15,1s,2s,clean,l=1 MO dipole Wilson approximation; unscreened additive test
+Be_q2_LDA,Be,216.52565417,217.57226692,1.0466127500000084,15,1s,2s,clean,l=1 MO dipole Wilson approximation; unscreened additive test
+Kr_q8,Kr,66.35553987,69.27712206,2.921582189999995,255,1s;2p;2s;3d;3p;3s,4p;4s,clean,l=1 MO dipole Wilson approximation; unscreened additive test
+Ca_q10,Ca,1424.67308305,1425.30863004,0.6355469899999662,77,1s;2p;2s,3p;3s;4s,clean,l=1 MO dipole Wilson approximation; unscreened additive test
+Ca_q2_PBE_adapted,Ca,1496.31224087,1658.03166276,161.71942188999992,65,3p;3s,4s,clean,l=1 MO dipole Wilson approximation; unscreened additive test

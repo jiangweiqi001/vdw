@@ -1,0 +1,17 @@
+atom,pseudo_name,basis_name,basis_file,pseudo_file,active_electrons,active_shells,can_build_pyscf_mol,can_run_rks,can_run_tddft_smoke,candidate_status,note
+Mg,GTH-PBE-q2,TZV2P-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=9; tddft_states=3
+Mg,GTH-PBE-q2,TZVP-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=6; tddft_states=3
+Mg,GTH-PBE-q2,DZVP-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=5; tddft_states=3
+Mg,GTH-PBE-q2,SZV-MOLOPT-SR-GTH-q2,,,2,3s,false,false,false,build_failed,IndexError: index -1 is out of bounds for axis 0 with size 0
+Mg,GTH-LDA-q2,TZV2P-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=9; tddft_states=3
+Mg,GTH-LDA-q2,TZVP-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=6; tddft_states=3
+Mg,GTH-LDA-q2,DZVP-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=5; tddft_states=3
+Mg,GTH-LDA-q2,SZV-MOLOPT-SR-GTH-q2,,,2,3s,false,false,false,build_failed,IndexError: index -1 is out of bounds for axis 0 with size 0
+Mg,GTH-PADE-q2,TZV2P-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=9; tddft_states=3
+Mg,GTH-PADE-q2,TZVP-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=6; tddft_states=3
+Mg,GTH-PADE-q2,DZVP-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=5; tddft_states=3
+Mg,GTH-PADE-q2,SZV-MOLOPT-SR-GTH-q2,,,2,3s,false,false,false,build_failed,IndexError: index -1 is out of bounds for axis 0 with size 0
+Mg,GTH-BLYP-q2,TZV2P-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=9; tddft_states=3
+Mg,GTH-BLYP-q2,TZVP-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=6; tddft_states=3
+Mg,GTH-BLYP-q2,DZVP-MOLOPT-SR-GTH-q2,external_data/cp2k/BASIS_MOLOPT_UCL,external_data/cp2k/GTH_POTENTIALS,2,3s,true,true,true,tddft_smoke_ok,nelectron=2; nao=5; tddft_states=3
+Mg,GTH-BLYP-q2,SZV-MOLOPT-SR-GTH-q2,,,2,3s,false,false,false,build_failed,IndexError: index -1 is out of bounds for axis 0 with size 0

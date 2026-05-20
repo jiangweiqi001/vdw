@@ -1,0 +1,10 @@
+atom,q,pseudo,basis,basis_file,status,note
+Ca,10,GTH-BLYP-q10,TZV2P-MOLOPT-SR-GTH-q10,external_data/cp2k/BASIS_MOLOPT_UCL,tddft_smoke_ok,nelectron=10; nao=23; tddft_states=3
+Sr,10,GTH-BLYP-q10,QZVPP-MOLOPT-PBE-GTH-q10,external_data/cp2k/BASIS_MOLOPT_UZH,tddft_smoke_ok,nelectron=10; nao=63; tddft_states=3
+Ba,10,GTH-BLYP-q10,QZVPP-MOLOPT-PBE-GTH-q10,external_data/cp2k/BASIS_MOLOPT_UZH,tddft_smoke_ok,nelectron=10; nao=60; tddft_states=3
+Zn,12,GTH-BLYP-q12,TZV2P-MOLOPT-SR-GTH-q12,external_data/cp2k/BASIS_MOLOPT_UCL,tddft_smoke_ok,nelectron=12; nao=41; tddft_states=3
+Cd,12,GTH-PADE-q12,TZV2P-MOLOPT-SR-GTH-q12,external_data/cp2k/BASIS_MOLOPT_UCL,tddft_smoke_ok,nelectron=12; nao=41; tddft_states=3
+Hg,12,GTH-PADE-q12,TZV2P-MOLOPT-SR-GTH-q12,external_data/cp2k/BASIS_MOLOPT_UCL,tddft_smoke_ok,nelectron=12; nao=41; tddft_states=3
+Ar,8,GTH-BLYP-q8,QZV2P-GTH-q8,external_data/cp2k/GTH_BASIS_SETS,tddft_smoke_ok,nelectron=8; nao=26; tddft_states=3
+Kr,8,GTH-BLYP-q8,TZV2P-MOLOPT-PBE-GTH-q8,external_data/cp2k/BASIS_MOLOPT_UZH,tddft_smoke_ok,nelectron=8; nao=29; tddft_states=3
+Xe,8,GTH-BLYP-q8,TZV2P-MOLOPT-PBE-GTH-q8,external_data/cp2k/BASIS_MOLOPT_UZH,tddft_smoke_ok,nelectron=8; nao=29; tddft_states=3

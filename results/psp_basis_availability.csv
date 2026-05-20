@@ -1,0 +1,37 @@
+atom,pseudo,basis,available,nelectron,nao,error
+Be,gth-lda,gth-szv,True,4,2,
+Be,gth-lda,gth-dzv,False,,,BasisNotFoundError: Basis for Be not found in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/basis/gth-dzv.dat
+Be,gth-lda,gth-dzvp,True,4,14,
+Be,gth-lda,gth-tzv2p,True,4,23,
+Be,gth-lda,gth-tzvp,True,4,18,
+Be,gth-lda,gth-qzv2p,True,4,27,
+Be,gth-lda,gth-qzvp,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-qzvp
+Be,gth-lda,gth-szv-molopt-sr,True,4,2,
+Be,gth-lda,gth-dzvp-molopt-sr,True,4,6,
+Be,gth-lda,gth-tzvp-molopt-sr,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-tzvp-molopt-sr
+Be,gth-lda,gth-tzv2p-molopt-sr,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-tzv2p-molopt-sr
+Be,gth-lda,gth-qzv2p-molopt-sr,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-qzv2p-molopt-sr
+Be,gth-pbe,gth-szv,True,4,2,
+Be,gth-pbe,gth-dzv,False,,,BasisNotFoundError: Basis for Be not found in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/basis/gth-dzv.dat
+Be,gth-pbe,gth-dzvp,True,4,14,
+Be,gth-pbe,gth-tzv2p,True,4,23,
+Be,gth-pbe,gth-tzvp,True,4,18,
+Be,gth-pbe,gth-qzv2p,True,4,27,
+Be,gth-pbe,gth-qzvp,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-qzvp
+Be,gth-pbe,gth-szv-molopt-sr,True,4,2,
+Be,gth-pbe,gth-dzvp-molopt-sr,True,4,6,
+Be,gth-pbe,gth-tzvp-molopt-sr,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-tzvp-molopt-sr
+Be,gth-pbe,gth-tzv2p-molopt-sr,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-tzv2p-molopt-sr
+Be,gth-pbe,gth-qzv2p-molopt-sr,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-qzv2p-molopt-sr
+Be,gth-hf,gth-szv,False,,,BasisNotFoundError: Pseudopotential for Be in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/pseudo/gth-hf.dat
+Be,gth-hf,gth-dzv,False,,,BasisNotFoundError: Basis for Be not found in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/basis/gth-dzv.dat
+Be,gth-hf,gth-dzvp,False,,,BasisNotFoundError: Pseudopotential for Be in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/pseudo/gth-hf.dat
+Be,gth-hf,gth-tzv2p,False,,,BasisNotFoundError: Pseudopotential for Be in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/pseudo/gth-hf.dat
+Be,gth-hf,gth-tzvp,False,,,BasisNotFoundError: Pseudopotential for Be in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/pseudo/gth-hf.dat
+Be,gth-hf,gth-qzv2p,False,,,BasisNotFoundError: Pseudopotential for Be in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/pseudo/gth-hf.dat
+Be,gth-hf,gth-qzvp,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-qzvp
+Be,gth-hf,gth-szv-molopt-sr,False,,,BasisNotFoundError: Pseudopotential for Be in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/pseudo/gth-hf.dat
+Be,gth-hf,gth-dzvp-molopt-sr,False,,,BasisNotFoundError: Pseudopotential for Be in /home/footman/.local/lib/python3.12/site-packages/pyscf/pbc/gto/pseudo/gth-hf.dat
+Be,gth-hf,gth-tzvp-molopt-sr,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-tzvp-molopt-sr
+Be,gth-hf,gth-tzv2p-molopt-sr,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-tzv2p-molopt-sr
+Be,gth-hf,gth-qzv2p-molopt-sr,False,,,BasisNotFoundError: Unknown basis format or basis name for gth-qzv2p-molopt-sr

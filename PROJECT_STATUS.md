@@ -170,30 +170,98 @@ E_vdW ~ (1 / 2pi) int dxi Tr ln[1 - W_v chi_c]
 The current code is atomic/dimer long-range focused. It does not yet provide
 periodic q-space screening, total-energy corrections for solids, or forces.
 
-## 6. Near-Term Roadmap
+## 6. Current PSP + EFT-Core Benchmark Status
+
+The PSP + EFT-core work has moved beyond the original double-counting
+diagnostic for Mg.
+
+Current clean Mg q2 chain:
+
+```text
+PSP baseline:       Mg GTH-PBE-q2 / TZV2P-MOLOPT-SR-GTH-q2
+explicit valence:   3s
+EFT shells:         2s,2p
+C6_PSP:             638.6202
+C6_PSP+dipole_EFT:  647.6079
+C6_all-e_PBE_TDDFT: 647.5881
+double counting:    clean
+```
+
+This makes Mg q2 the first clean benchmark candidate. The correction is still
+an unscreened `l=1` MO dipole Wilson approximation, so it should be described as
+a benchmark loop rather than the final screened EFT-vdW method.
+
+Ca also has a clean-by-shell-overlap q2 diagnostic:
+
+```text
+C6_PSP:             1972.5599
+C6_PSP+dipole_EFT:  2149.5021
+C6_all-e_LDA_TDDFT: 1982.7700
+```
+
+However, the current Ca q2 row uses `GTH-LDA-q2 + cc-pVQZ`, so it should remain
+a diagnostic until a matched large-core Ca PSP basis is established.
+
+Recent clean non-q2 and Be consistency checks are useful negative controls:
+
+```text
+case        explicit PSP shells  EFT shells       closure
+Be q2 PBE   2s                   1s               2.21%
+Be q2 LDA   2s                   1s               2.26%
+Kr q8 PBE   4s,4p                core through 3d  4.28%
+Ca q10 PBE  3s,3p,4s             1s,2s,2p         0.081%
+```
+
+These rows pass the shell-overlap audit, but they do not provide a second strong
+closure benchmark. The Be LDA consistency check shows that Be fails as a strong
+example because the frozen `1s` contribution is intrinsically small, not because
+of the PBE/LDA mismatch in the Be q2 diagnostic. Kr q8 and Ca q10 similarly
+show that deep-core-only additive corrections are too small for the current
+benchmark goal.
+
+The next production-quality benchmark therefore still needs a large-core
+alkaline-earth case where the missing shell is semicore, not deep core:
+
+```text
+Ca q2: explicit PSP valence = 4s; EFT shells = 3s,3p
+Sr q2: explicit PSP valence = 5s; EFT shells = 4s,4p
+```
+
+The local CP2K scan found Ca/Sr/Ba q2 pseudos but no matched q2 basis for these
+targets. The active task is now to import or construct a clearly labeled
+large-core q2 basis route for Ca or Sr.
+
+## 7. Near-Term Roadmap
 
 Next steps:
 
-1. Clean up documentation and make all current benchmarks reproducible.
-2. Add plots for:
+1. Import or construct a matched large-core q2 basis route for Ca or Sr:
+   - target Ca q2: `GTH-*-q2` with explicit `4s`
+   - target Sr q2: `GTH-*-q2` with explicit `5s`
+   - require a PySCF build/RKS/TDDFT smoke test before benchmark use
+2. Re-run the clean benchmark chain for the first successful Ca/Sr route:
+   - PSP valence-only TDDFT
+   - PSP + `l=1` dipole EFT semicore correction
+   - all-electron TDDFT reference with the same XC backend where possible
+3. Clean up documentation and make all current benchmarks reproducible.
+4. Add plots for:
    - noble gas TDHF benchmark
    - semicore/core correction summary
    - Ca basis sensitivity
-3. Add Ca2 long-range tail comparison:
+5. Add Ca2 long-range tail comparison:
    - all-electron TDHF
    - valence-only
    - valence+semicore
-4. Optionally test K or Sr as shallow-semicore systems.
-5. Begin screened-pairwise prototype with a model `W_v`:
+6. Begin screened-pairwise prototype with a model `W_v`:
    - bare
    - dielectric
    - Yukawa/Thomas-Fermi
-6. Later: implement finite-system log/MBD energy.
-7. Long term: connect to ab initio valence response `W_v` and periodic systems.
+7. Later: implement finite-system log/MBD energy.
+8. Long term: connect to ab initio valence response `W_v` and periodic systems.
 
-## 7. Current Status In One Sentence
+## 8. Current Status In One Sentence
 
-This repository currently provides a working TDHF/RPA oscillator-response
-prototype for EFT-inspired long-range C6 calculations, with evidence that
-semicore dynamic mixing can change Ca C6 by about 8% relative to a valence-only
-partition.
+This repository currently provides a working atomic response-to-C6 prototype
+with a clean Mg q2 PSP -> PSP+dipole-EFT -> all-electron benchmark loop, while
+the final screened EFT-vdW functional and production-quality Ca large-core PSP
+benchmark remain future work.

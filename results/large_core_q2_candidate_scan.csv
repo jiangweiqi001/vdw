@@ -1,0 +1,7 @@
+atom,pseudo_name,basis_name,basis_file,pseudo_file,active_electrons,active_shells,can_build_pyscf_mol,can_run_rks,can_run_tddft_smoke,candidate_status,note
+Ca,GTH-LDA-q2,,,,2,4s,false,false,false,no_matched_q2_basis,no matched q2 basis found
+Sr,GTH-LDA-q2,,,,2,5s,false,false,false,no_matched_q2_basis,no matched q2 basis found
+Ba,GTH-LDA-q2,,,,2,6s,false,false,false,no_matched_q2_basis,no matched q2 basis found
+Zn,GTH-LDA-q2,,,,2,4s,false,false,false,no_matched_q2_basis,no matched q2 basis found
+Cd,GTH-LDA-q2,,,,2,5s,false,false,false,no_matched_q2_basis,no matched q2 basis found
+Hg,GTH-LDA-q2,,,,2,6s,false,false,false,no_matched_q2_basis,no matched q2 basis found

@@ -1,0 +1,2 @@
+atom,psp,psp_basis,xc,method,active_electrons,active_shells,eft_shells,C6_psp,C6_psp_plus_eft,C6_all_e,delta_C6_missing,residual_C6,closure_fraction,closure_pct,double_counting_status,benchmark_status,note
+Mg,GTH-PBE-q2,TZV2P-MOLOPT-SR-GTH-q2,pbe,TDDFT,2,3s,2p;2s,638.62015545,647.60794451,647.5881004,8.96794495000006,-0.019844110000008186,1.0022127823164222,100.22127823164222,clean,clean_candidate,unscreened l=1 MO dipole EFT approximation

@@ -758,6 +758,602 @@ class EftPipelineTests(unittest.TestCase):
         self.assertEqual(combos["valence_plus_semicore"], {"4s", "3s", "3p"})
         self.assertEqual(combos["valence_plus_semicore_plus_deep_core"], {"4s", "3s", "3p", "1s"})
 
+    def test_all_e_rpa_channel_rows_from_arrays(self):
+        from run_all_e_rpa_atom import response_rows_from_arrays
+
+        rows = response_rows_from_arrays("Ar", [0.2, 0.4], [0.0, 1.5], source="PySCF_TDDFT_LDA")
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["atom"], "Ar")
+        self.assertEqual(rows[0]["channel"], "rpa_002")
+        self.assertAlmostEqual(rows[0]["delta_Ha"], 0.4)
+        self.assertAlmostEqual(rows[0]["osc"], 1.5)
+        self.assertEqual(rows[0]["source"], "PySCF_TDDFT_LDA")
+
+    def test_all_e_rpa_summary_row_uses_reference_errors(self):
+        from run_all_e_rpa_atom import summarize_response
+
+        row = summarize_response(
+            atom="Ar",
+            xc="lda",
+            basis="aug-cc-pVTZ",
+            nstates=20,
+            method="TDDFT",
+            alpha_row={"alpha0_au": "10.0", "C6_self_au": "60.0", "n_channels": "3"},
+            alpha0_ref=11.0,
+            c6_ref=66.0,
+        )
+
+        self.assertEqual(row["atom"], "Ar")
+        self.assertEqual(row["method"], "TDDFT")
+        self.assertAlmostEqual(row["alpha0_err"], -100.0 / 11.0)
+        self.assertAlmostEqual(row["C6_err"], -100.0 / 11.0)
+
+    def test_all_e_rpa_convergence_row_records_status(self):
+        from run_all_e_rpa_convergence_ar import convergence_row
+
+        row = convergence_row(
+            basis="aug-cc-pVTZ",
+            nstates=100,
+            summary={
+                "alpha0": 10.0,
+                "C6": 60.0,
+                "alpha0_err": -10.0,
+                "C6_err": -5.0,
+                "n_channels": 12,
+            },
+        )
+
+        self.assertEqual(row["basis"], "aug-cc-pVTZ")
+        self.assertEqual(row["nstates"], 100)
+        self.assertEqual(row["status"], "ok")
+        self.assertAlmostEqual(row["C6_err"], -5.0)
+
+    def test_all_e_method_comparison_row_computes_deltas(self):
+        from run_all_e_method_comparison import comparison_row
+
+        row = comparison_row(
+            atom="Ar",
+            xc="pbe",
+            ks_alpha0=11.7,
+            ks_c6=68.0,
+            hf_alpha0=10.6,
+            hf_c6=60.7,
+            ref_alpha0=11.1,
+            ref_c6=64.3,
+            basis="aug-cc-pVQZ",
+        )
+
+        self.assertEqual(row["atom"], "Ar")
+        self.assertAlmostEqual(row["delta_C6_KS_minus_HF"], 7.3)
+        self.assertAlmostEqual(row["KS_C6_err"], 100.0 * (68.0 - 64.3) / 64.3)
+
+    def test_psp_rpa_summary_row_records_valence_metadata(self):
+        from run_psp_rpa_atom import summarize_psp_response
+
+        row = summarize_psp_response(
+            atom="Ar",
+            psp="gth-lda",
+            basis="gth-dzvp",
+            xc="lda",
+            nstates=20,
+            method="TDDFT",
+            nelec=8,
+            alpha_row={"alpha0_au": "7.0", "C6_self_au": "40.0", "n_channels": "12"},
+        )
+
+        self.assertEqual(row["atom"], "Ar")
+        self.assertEqual(row["active_electrons"], 8)
+        self.assertEqual(row["status"], "ok")
+        self.assertAlmostEqual(row["C6_psp"], 40.0)
+
+    def test_psp_rpa_summary_infers_mg_q2_active_shell(self):
+        from run_psp_rpa_atom import summarize_psp_response
+
+        row = summarize_psp_response(
+            atom="Mg",
+            psp="GTH-PBE-q2",
+            basis="TZV2P-MOLOPT-SR-GTH-q2",
+            xc="pbe",
+            nstates=100,
+            method="TDDFT",
+            nelec=2,
+            alpha_row={"alpha0_au": "72.0", "C6_self_au": "638.0", "n_channels": "6"},
+        )
+
+        self.assertEqual(row["active_shells"], "3s")
+
+    def test_dipole_validation_uses_clean_mg_q2_path(self):
+        from run_eft_core_dipole_validation import BEST_PSP
+
+        self.assertIn("GTH-PBE-q2_TZV2P-MOLOPT-SR-GTH-q2_pbe_tddft", BEST_PSP["Mg"])
+        self.assertNotIn("placeholder", BEST_PSP["Mg"])
+
+    def test_psp_rpa_unavailable_row(self):
+        from run_psp_rpa_atom import unavailable_row
+
+        row = unavailable_row("Ca", "gth-lda", "gth-dzvp", "lda", 20, "missing basis")
+
+        self.assertEqual(row["atom"], "Ca")
+        self.assertEqual(row["status"], "unavailable")
+        self.assertIn("missing basis", row["note"])
+
+    def test_cp2k_named_block_extraction(self):
+        from run_psp_rpa_atom import extract_cp2k_named_block
+
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / "BASIS"
+            path.write_text(
+                "# comment\n"
+                "Ca SMALL-BASIS\n"
+                "1\n"
+                "2 0 0 1 1\n"
+                "1.0 1.0\n"
+                "Ca TARGET-BASIS TARGET-ALIAS\n"
+                "1\n"
+                "2 0 0 1 1\n"
+                "2.0 1.0\n",
+                encoding="utf-8",
+            )
+
+            block = extract_cp2k_named_block(path, "Ca", "TARGET-ALIAS")
+
+        self.assertIn("Ca TARGET-BASIS TARGET-ALIAS", block)
+        self.assertIn("2.0 1.0", block)
+
+    def test_all_e_vs_psp_row_computes_missing_c6(self):
+        from run_all_e_vs_psp_rpa_summary import comparison_row
+
+        row = comparison_row(
+            atom="Ar",
+            all_e_c6=68.0,
+            psp_c6=16.0,
+            psp_status="ok",
+            partition="gth-lda/gth-dzvp",
+        )
+
+        self.assertEqual(row["atom"], "Ar")
+        self.assertAlmostEqual(row["delta_C6_missing"], 52.0)
+        self.assertAlmostEqual(row["relative_missing_pct"], 100.0 * 52.0 / 68.0)
+
+    def test_orbital_hartree_potential_and_self_coulomb(self):
+        from compute_core_wilson import orbital_hartree_potential, self_coulomb
+
+        r = np.array([1.0, 2.0, 3.0])
+        u = np.array([1.0, 0.0, 0.0])
+
+        vh = orbital_hartree_potential(r, u)
+        j = self_coulomb(r, u)
+
+        self.assertEqual(vh.shape, r.shape)
+        self.assertGreaterEqual(vh[0], vh[-1])
+        self.assertGreater(j, 0.0)
+
+    def test_scalar_proxy_channel_uses_f0_over_delta_squared(self):
+        from build_eft_core_correction import scalar_proxy_channel
+
+        row = scalar_proxy_channel(
+            {
+                "atom": "Ca",
+                "shell": "3s",
+                "Delta_E_Ha": "2.0",
+                "occupation": "2",
+                "f0": "1.0",
+            }
+        )
+
+        self.assertEqual(row["atom"], "Ca")
+        self.assertEqual(row["channel"], "eft_core_scalar_proxy_3s")
+        self.assertAlmostEqual(float(row["osc"]), 0.5)
+        self.assertEqual(row["source"], "EFT_CORE_SCALAR_PROXY")
+
+    def test_dipole_wilson_channels_from_arrays_selects_core_shells(self):
+        from compute_dipole_wilson import dipole_wilson_channels_from_arrays
+
+        mo_energy = [0.0, 1.0, 2.0]
+        mo_occ = [2.0, 2.0, 0.0]
+        dipole_mo = np.zeros((3, 3, 3))
+        dipole_mo[0, 1, 2] = 2.0
+        mo_to_shell = {0: "1s", 1: "2s", 2: "3p"}
+
+        rows = dipole_wilson_channels_from_arrays(
+            atom="Mg",
+            mo_energy=mo_energy,
+            mo_occ=mo_occ,
+            dipole_mo=dipole_mo,
+            mo_to_shell=mo_to_shell,
+            selected_shells={"2s"},
+        )
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["from_shell"], "2s")
+        self.assertEqual(rows[0]["channel"], "eft_dipole_2s_occ_001_to_virt_002")
+        self.assertAlmostEqual(rows[0]["delta_Ha"], 1.0)
+        self.assertAlmostEqual(rows[0]["osc"], (2.0 / 3.0) * 1.0 * 2.0 * 4.0)
+        self.assertAlmostEqual(rows[0]["occ_energy_Ha"], 1.0)
+        self.assertAlmostEqual(rows[0]["virt_energy_Ha"], 2.0)
+        self.assertEqual(rows[0]["source"], "EFT_CORE_DIPOLE_WILSON_MO_APPROX")
+
+    def test_double_counting_guard_blocks_overlapping_shells(self):
+        from run_eft_core_dipole_validation import double_counting_status
+
+        status = double_counting_status({"2s", "2p"}, {"2s", "2p", "3s"})
+
+        self.assertEqual(status, "diagnostic_double_counting")
+
+    def test_double_counting_guard_allows_clean_shells(self):
+        from run_eft_core_dipole_validation import double_counting_status
+
+        status = double_counting_status({"2s", "2p"}, {"3s"})
+
+        self.assertEqual(status, "clean")
+
+    def test_mg_q2_benchmark_row_computes_closure(self):
+        from run_mg_q2_benchmark import benchmark_row
+
+        row = benchmark_row(
+            psp_row={
+                "atom": "Mg",
+                "psp": "GTH-PBE-q2",
+                "basis": "TZV2P-MOLOPT-SR-GTH-q2",
+                "xc": "pbe",
+                "method": "TDDFT",
+                "active_electrons": "2",
+                "active_shells": "3s",
+                "C6_psp": "638.62015545",
+                "alpha0_psp": "72.11681004",
+            },
+            all_e_row={
+                "atom": "Mg",
+                "xc": "pbe",
+                "basis": "aug-cc-pVQZ",
+                "method": "TDDFT",
+                "C6": "647.58810039",
+                "alpha0": "73.64242187",
+            },
+            eft_row={
+                "atom": "Mg",
+                "C6_psp": "638.62015545",
+                "C6_psp_plus_dipole": "647.60794451",
+                "Delta_C6_dipole": "8.98778906",
+                "correction_shells": "2p;2s",
+                "psp_explicit_valence_shells": "3s",
+                "double_counting_status": "clean",
+            },
+        )
+
+        self.assertEqual(row["benchmark_status"], "clean_candidate")
+        self.assertAlmostEqual(row["closure_fraction"], 1.0022127834)
+        self.assertAlmostEqual(row["residual_C6"], -0.01984412)
+
+    def test_mg_q2_audit_flags_placeholder_paths(self):
+        from run_mg_q2_benchmark import audit_row
+
+        row = audit_row(
+            psp_path="results/psp_rpa/mg/GTH-PBE-q2_TZV2P-MOLOPT-SR-GTH-q2_pbe_tddft/mg_psp_channels.csv",
+            psp_row={"active_electrons": "2", "active_shells": "3s", "xc": "pbe", "method": "TDDFT"},
+            all_e_row={"xc": "pbe", "method": "TDDFT"},
+            eft_row={
+                "correction_shells": "2p;2s",
+                "psp_explicit_valence_shells": "3s",
+                "double_counting_status": "clean",
+            },
+        )
+
+        self.assertEqual(row["audit_status"], "pass")
+        self.assertEqual(row["placeholder_path_used"], "false")
+        self.assertEqual(row["shell_overlap"], "false")
+
+    def test_mg_q2_sensitivity_rows_extract_shell_and_cutoff_cases(self):
+        from run_mg_q2_benchmark import sensitivity_rows
+
+        rows = sensitivity_rows(
+            shell_rows=[
+                {"atom": "Mg", "shell": "2s", "Delta_C6_shell": "0.33", "C6_psp": "638.62"},
+                {"atom": "Ca", "shell": "3s", "Delta_C6_shell": "1.48", "C6_psp": "1972.56"},
+            ],
+            virtual_rows=[
+                {"atom": "Mg", "max_delta_Ha": "5.0", "Delta_C6_cutoff": "8.63", "C6_psp": "638.62"},
+            ],
+        )
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["case_type"], "shell")
+        self.assertEqual(rows[0]["case"], "2s")
+        self.assertEqual(rows[1]["case_type"], "virtual_cutoff")
+        self.assertEqual(rows[1]["case"], "5.0")
+
+    def test_mg_q2_stability_row_flags_tolerance(self):
+        from run_mg_q2_benchmark import stability_row
+
+        passing = stability_row(
+            category="all_e_nstates",
+            case="nstates_150",
+            value=647.0,
+            reference=648.0,
+            tolerance_pct=0.2,
+            quantity="C6_all_e",
+        )
+        review = stability_row(
+            category="psp_nstates",
+            case="nstates_20",
+            value=630.0,
+            reference=638.0,
+            tolerance_pct=0.2,
+            quantity="C6_psp",
+        )
+
+        self.assertEqual(passing["status"], "pass")
+        self.assertEqual(review["status"], "review")
+        self.assertAlmostEqual(passing["delta_pct"], -100.0 / 648.0)
+
+    def test_mg_q2_selects_nstates_100_psp_baseline(self):
+        from run_mg_q2_benchmark import select_mg_q2_psp_row
+
+        row = select_mg_q2_psp_row([
+            {"atom": "Mg", "psp": "GTH-PBE-q2", "basis": "TZV2P-MOLOPT-SR-GTH-q2", "xc": "pbe", "method": "TDDFT", "nstates": "20"},
+            {"atom": "Mg", "psp": "GTH-PBE-q2", "basis": "TZV2P-MOLOPT-SR-GTH-q2", "xc": "pbe", "method": "TDDFT", "nstates": "100"},
+        ])
+
+        self.assertEqual(row["nstates"], "100")
+
+    def test_mg_q2_selects_nstates_200_all_e_baseline(self):
+        from run_mg_q2_benchmark import select_mg_pbe_all_e_row
+
+        row = select_mg_pbe_all_e_row([
+            {"atom": "Mg", "xc": "pbe", "basis": "aug-cc-pVQZ", "method": "TDDFT", "nstates": "100"},
+            {"atom": "Mg", "xc": "pbe", "basis": "aug-cc-pVQZ", "method": "TDDFT", "nstates": "200"},
+        ])
+
+        self.assertEqual(row["nstates"], "200")
+
+    def test_clean_candidate_specs_define_kr_q8_and_ca_q10_shells(self):
+        from run_non_q2_clean_benchmarks import BENCHMARK_SPECS
+
+        kr = BENCHMARK_SPECS["Kr_q8"]
+        ca = BENCHMARK_SPECS["Ca_q10"]
+
+        self.assertEqual(kr.atom, "Kr")
+        self.assertEqual(kr.psp, "GTH-PBE-q8")
+        self.assertEqual(kr.explicit_shells, {"4s", "4p"})
+        self.assertEqual(kr.correction_shells, {"1s", "2s", "2p", "3s", "3p", "3d"})
+        self.assertTrue(kr.correction_shells.isdisjoint(kr.explicit_shells))
+
+        self.assertEqual(ca.atom, "Ca")
+        self.assertEqual(ca.psp, "GTH-PBE-q10")
+        self.assertEqual(ca.explicit_shells, {"3s", "3p", "4s"})
+        self.assertEqual(ca.correction_shells, {"1s", "2s", "2p"})
+        self.assertTrue(ca.correction_shells.isdisjoint(ca.explicit_shells))
+
+    def test_ca_q2_pbe_adapted_spec_records_basis_provenance(self):
+        from run_non_q2_clean_benchmarks import BENCHMARK_SPECS
+
+        ca = BENCHMARK_SPECS["Ca_q2_PBE_adapted"]
+
+        self.assertEqual(ca.atom, "Ca")
+        self.assertEqual(ca.psp, "GTH-PBE-q2")
+        self.assertEqual(ca.pseudo_file, "external_data/cp2k/POTENTIAL_UZH_CASR_Q2")
+        self.assertEqual(ca.psp_basis, "TZV2P-MOLOPT-PBE-GTH-q10")
+        self.assertEqual(ca.explicit_shells, {"4s"})
+        self.assertEqual(ca.correction_shells, {"3s", "3p"})
+        self.assertIn("adapted", ca.role)
+
+    def test_be_q2_spec_uses_two_s_valence_and_one_s_correction(self):
+        from run_non_q2_clean_benchmarks import BENCHMARK_SPECS
+        from run_psp_rpa_atom import infer_active_shells
+
+        be = BENCHMARK_SPECS["Be_q2"]
+
+        self.assertEqual(be.atom, "Be")
+        self.assertEqual(be.psp, "GTH-LDA-q2")
+        self.assertEqual(be.psp_basis, "TZV2P-MOLOPT-PBE-GTH-q2")
+        self.assertEqual(be.explicit_shells, {"2s"})
+        self.assertEqual(be.correction_shells, {"1s"})
+        self.assertEqual(infer_active_shells("Be", 2), "2s")
+
+    def test_be_q2_lda_spec_uses_lda_backend_consistently(self):
+        from run_non_q2_clean_benchmarks import BENCHMARK_SPECS
+
+        be = BENCHMARK_SPECS["Be_q2_LDA"]
+
+        self.assertEqual(be.atom, "Be")
+        self.assertEqual(be.psp, "GTH-LDA-q2")
+        self.assertEqual(be.psp_basis, "TZV2P-MOLOPT-PBE-GTH-q2")
+        self.assertEqual(be.xc, "lda")
+        self.assertEqual(be.method, "TDDFT")
+        self.assertEqual(be.explicit_shells, {"2s"})
+        self.assertEqual(be.correction_shells, {"1s"})
+
+    def test_summary_row_without_external_reference_keeps_blank_ref_fields(self):
+        from run_non_q2_clean_benchmarks import summarize_all_e_without_reference
+
+        row = summarize_all_e_without_reference(
+            atom="Be",
+            xc="pbe",
+            basis="aug-cc-pVQZ",
+            nstates=100,
+            method="TDDFT",
+            alpha_row={"alpha0_au": "37.5", "C6_self_au": "210.0", "n_channels": "12"},
+        )
+
+        self.assertEqual(row["atom"], "Be")
+        self.assertEqual(row["alpha0_ref"], "")
+        self.assertEqual(row["C6_ref"], "")
+        self.assertAlmostEqual(row["C6"], 210.0)
+
+    def test_non_q2_benchmark_row_classifies_clean_and_closure(self):
+        from run_non_q2_clean_benchmarks import BENCHMARK_SPECS, benchmark_row
+
+        row = benchmark_row(
+            spec=BENCHMARK_SPECS["Kr_q8"],
+            psp_row={
+                "atom": "Kr",
+                "psp": "GTH-PBE-q8",
+                "basis": "TZV2P-MOLOPT-PBE-GTH-q8",
+                "xc": "pbe",
+                "method": "TDDFT",
+                "active_electrons": "8",
+                "active_shells": "4s;4p",
+                "C6_psp": "70.0",
+            },
+            all_e_row={
+                "atom": "Kr",
+                "xc": "pbe",
+                "basis": "aug-cc-pVQZ",
+                "method": "TDDFT",
+                "C6": "100.0",
+            },
+            eft_row={
+                "atom": "Kr",
+                "C6_psp_plus_dipole": "85.0",
+                "correction_shells": "1s;2s;2p;3s;3p;3d",
+                "psp_explicit_valence_shells": "4s;4p",
+                "double_counting_status": "clean",
+            },
+        )
+
+        self.assertEqual(row["benchmark_status"], "clean_candidate")
+        self.assertAlmostEqual(row["closure_fraction"], 0.5)
+        self.assertAlmostEqual(row["residual_C6"], 15.0)
+
+    def test_non_q2_audit_rejects_correction_overlap(self):
+        from run_non_q2_clean_benchmarks import BENCHMARK_SPECS, audit_row
+
+        row = audit_row(
+            spec=BENCHMARK_SPECS["Ca_q10"],
+            psp_path="results/psp_rpa/ca/GTH-PBE-q10_TZV2P-MOLOPT-PBE-GTH-q10_pbe_tddft/ca_psp_channels.csv",
+            psp_row={"active_electrons": "10", "active_shells": "3s;3p;4s", "xc": "pbe", "method": "TDDFT"},
+            all_e_row={"xc": "pbe", "method": "TDDFT"},
+            eft_row={
+                "correction_shells": "2p;3s",
+                "psp_explicit_valence_shells": "3s;3p;4s",
+                "double_counting_status": "diagnostic_double_counting",
+            },
+        )
+
+        self.assertEqual(row["audit_status"], "fail")
+        self.assertEqual(row["shell_overlap"], "true")
+
+    def test_q2_candidate_status_requires_matched_basis(self):
+        from probe_large_core_q2_candidates import candidate_status
+
+        row = candidate_status(
+            atom="Ca",
+            pseudo_name="GTH-LDA-q2",
+            basis_name="",
+            can_build=False,
+            can_run_rks=False,
+            can_run_tddft=False,
+            note="no basis",
+        )
+
+        self.assertEqual(row["candidate_status"], "no_matched_q2_basis")
+        self.assertEqual(row["active_shells"], "4s")
+
+    def test_q2_candidate_status_promotes_tddft_smoke(self):
+        from probe_large_core_q2_candidates import candidate_status
+
+        row = candidate_status(
+            atom="Mg",
+            pseudo_name="GTH-PBE-q2",
+            basis_name="TZV2P-MOLOPT-SR-GTH-q2",
+            can_build=True,
+            can_run_rks=True,
+            can_run_tddft=True,
+            note="",
+        )
+
+        self.assertEqual(row["candidate_status"], "tddft_smoke_ok")
+        self.assertEqual(row["active_electrons"], 2)
+
+    def test_cp2k_header_discovery_finds_q2_aliases(self):
+        from probe_large_core_q2_candidates import discover_headers
+
+        headers = discover_headers(
+            lines=[
+                "# comment",
+                "Mg GTH-PBE-q2",
+                "2 4",
+                "Ca GTH-PBE-q10 GTH-PBE",
+                "2 4",
+                "Mg TZV2P-MOLOPT-SR-GTH-q2",
+                "1",
+            ],
+            atom="Mg",
+            required_token="q2",
+        )
+
+        self.assertEqual(headers, ["GTH-PBE-q2", "TZV2P-MOLOPT-SR-GTH-q2"])
+
+    def test_cp2k_header_discovery_does_not_treat_q20_as_q2(self):
+        from probe_large_core_q2_candidates import discover_headers
+
+        headers = discover_headers(
+            lines=[
+                "Cd QZVPP-MOLOPT-PBE-GTH-q20",
+                "Cd GTH-LDA-q2",
+            ],
+            atom="Cd",
+            required_token="q2",
+        )
+
+        self.assertEqual(headers, ["GTH-LDA-q2"])
+
+    def test_q2_basis_rank_prefers_larger_basis(self):
+        from probe_large_core_q2_candidates import preferred_bases
+
+        ranked = preferred_bases([
+            "DZVP-MOLOPT-SR-GTH-q2",
+            "TZV2P-MOLOPT-SR-GTH-q2",
+            "SZV-MOLOPT-SR-GTH-q2",
+        ])
+
+        self.assertEqual(ranked[0], "TZV2P-MOLOPT-SR-GTH-q2")
+
+    def test_imported_q2_candidate_basis_records_provenance(self):
+        from probe_large_core_q2_candidates import load_imported_basis_candidates
+
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / "candidates.csv"
+            self._write_csv(
+                path,
+                ["atom", "basis_file", "basis_name", "basis_label", "basis_provenance", "basis_note"],
+                [
+                    {
+                        "atom": "Ca",
+                        "basis_file": "external_data/cp2k/BASIS_MOLOPT_UZH",
+                        "basis_name": "TZV2P-MOLOPT-PBE-GTH-q10",
+                        "basis_label": "TZV2P-MOLOPT-PBE-GTH-q10-as-q2-adapted",
+                        "basis_provenance": "adapted_from_q10",
+                        "basis_note": "q10 basis used as q2 candidate",
+                    }
+                ],
+            )
+
+            candidates = load_imported_basis_candidates(path, atom="Ca")
+
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0]["basis_name"], "TZV2P-MOLOPT-PBE-GTH-q10")
+        self.assertEqual(candidates[0]["basis_label"], "TZV2P-MOLOPT-PBE-GTH-q10-as-q2-adapted")
+        self.assertEqual(candidates[0]["basis_provenance"], "adapted_from_q10")
+
+    def test_q2_candidate_status_includes_basis_provenance(self):
+        from probe_large_core_q2_candidates import candidate_status
+
+        row = candidate_status(
+            atom="Ca",
+            pseudo_name="GTH-LDA-q2",
+            basis_name="TZV2P-MOLOPT-PBE-GTH-q10-as-q2-adapted",
+            can_build=True,
+            can_run_rks=True,
+            can_run_tddft=True,
+            note="smoke ok",
+            basis_provenance="adapted_from_q10",
+        )
+
+        self.assertEqual(row["candidate_status"], "tddft_smoke_ok")
+        self.assertEqual(row["basis_provenance"], "adapted_from_q10")
+
     @staticmethod
     def _write_csv(path, fieldnames, rows):
         with open(path, "w", newline="", encoding="utf-8") as fp:

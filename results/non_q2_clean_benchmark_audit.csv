@@ -1,0 +1,6 @@
+case_id,atom,psp_path,placeholder_path_used,shell_overlap,audit_status,active_electron_count,active_shells_match,correction_shells_match,no_shell_overlap,psp_pbe_tddft,all_e_pbe_tddft,placeholder_path_not_used,double_counting_clean
+Be_q2,Be,results/psp_rpa/be/GTH-LDA-q2_TZV2P-MOLOPT-PBE-GTH-q2_pbe_tddft/be_psp_channels.csv,false,false,pass,true,true,true,true,true,true,true,true
+Be_q2_LDA,Be,results/psp_rpa/be/GTH-LDA-q2_TZV2P-MOLOPT-PBE-GTH-q2_lda_tddft/be_psp_channels.csv,false,false,pass,true,true,true,true,true,true,true,true
+Kr_q8,Kr,results/psp_rpa/kr/GTH-PBE-q8_TZV2P-MOLOPT-PBE-GTH-q8_pbe_tddft/kr_psp_channels.csv,false,false,pass,true,true,true,true,true,true,true,true
+Ca_q10,Ca,results/psp_rpa/ca/GTH-PBE-q10_TZV2P-MOLOPT-PBE-GTH-q10_pbe_tddft/ca_psp_channels.csv,false,false,pass,true,true,true,true,true,true,true,true
+Ca_q2_PBE_adapted,Ca,results/psp_rpa/ca/GTH-PBE-q2_TZV2P-MOLOPT-PBE-GTH-q10_pbe_tddft/ca_psp_channels.csv,false,false,pass,true,true,true,true,true,true,true,true

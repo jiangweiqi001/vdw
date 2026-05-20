@@ -1,0 +1,6 @@
+atom,q,pseudo,basis,basis_file,status,explicit_shells,candidate_role,priority,note
+Ca,10,GTH-PBE-q10,TZV2P-MOLOPT-PBE-GTH-q10,external_data/cp2k/BASIS_MOLOPT_UZH,tddft_smoke_ok,3s;3p;4s,deep_core_only_clean_diagnostic,1,"Best physical continuity with Ca/Mg, but semicore 3s3p is explicit; EFT correction would be deep core only, not Mg-like large-core semicore benchmark."
+Kr,8,GTH-PBE-q8,TZV2P-MOLOPT-PBE-GTH-q8,external_data/cp2k/BASIS_MOLOPT_UZH,tddft_smoke_ok,4s;4p,noble_gas_core_clean_benchmark,2,All-e PBE reference exists and matched PSP route exists; correction shells are core through 3d. Physics differs from Mg semicore story.
+Ar,8,GTH-PBE-q8,TZV2P-MOLOPT-PBE-GTH-q8,external_data/cp2k/BASIS_MOLOPT_UZH,tddft_smoke_ok,3s;3p,small_noble_gas_core_clean_benchmark,3,Cheapest clean core benchmark. Existing PSP gap is large; likely tests bookkeeping more than EFT closure.
+Sr,10,GTH-PBE-q10,QZVPP-MOLOPT-PBE-GTH-q10,external_data/cp2k/BASIS_MOLOPT_UZH,tddft_smoke_ok,4s;4p;5s,deep_core_only_clean_diagnostic,4,"Good alkaline-earth analogue, but no existing all-e reference in reference_alpha_c6.csv and heavier all-e TDDFT cost."
+Ba,10,GTH-PBE-q10,QZVPP-MOLOPT-PBE-GTH-q10,external_data/cp2k/BASIS_MOLOPT_UZH,tddft_smoke_ok,5s;5p;6s,deep_core_only_clean_diagnostic,5,Similar to Sr but heavier; likely not the next efficient benchmark.

@@ -1,0 +1,9 @@
+category,case,quantity,value,reference,delta,delta_pct,tolerance_pct,status
+all_e_nstates,aug-cc-pVQZ_nstates_100,C6_all_e,644.92232877,647.58810041,-2.6657716400000027,-0.41164617421355537,0.2,review
+all_e_nstates,aug-cc-pVQZ_nstates_150,C6_all_e,645.37146889,647.58810041,-2.216631520000078,-0.3422903414372018,0.2,review
+all_e_nstates,aug-cc-pVQZ_nstates_200,C6_all_e,647.58810039,647.58810041,-2.0000015865662135e-08,-3.0883853259502073e-09,0.2,pass
+all_e_basis,aug-cc-pVTZ_nstates_200,C6_all_e,661.15486234,647.58810041,13.566761929999984,2.094967761361059,0.5,review
+all_e_basis,aug-cc-pVQZ_nstates_200,C6_all_e,647.5881004,647.58810041,-1.0000007932831068e-08,-1.5441926629751036e-09,0.5,pass
+psp_nstates,nstates_20,C6_psp,638.62015545,638.62015545,0.0,0.0,0.2,pass
+psp_nstates,nstates_50,C6_psp,638.62015545,638.62015545,0.0,0.0,0.2,pass
+psp_nstates,nstates_100,C6_psp,638.62015545,638.62015545,0.0,0.0,0.2,pass
