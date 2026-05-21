@@ -1,0 +1,6 @@
+case,C6_PSP,C6_PSP_EFT,C6_all_e,closure_pct,double_counting_status,note
+Mg_q2,638.62015545,647.60794451,647.58810040,100.221253,clean,"strongest clean benchmark; matched q2 PSP/basis; explicit 3s, EFT 2s/2p"
+Ca_q2_PBE_adapted,1496.31224087,1658.03166276,2206.75882541,22.763065571595366,clean,Ca q2 PBE diagnostic using official UZH GTH-PBE-q2 pseudo with q10 UZH basis as an explicitly adapted q2 candidate.
+Be_q2,209.84599821,210.87562603,256.41610946,2.210919820381581,clean,"Clean Be q2 diagnostic; local CP2K data has LDA/PADE q2 pseudo, not PBE q2 pseudo."
+Kr_q8,66.35553987,69.27712206,134.64958004,4.277946044380282,clean,Clean q8 noble-gas benchmark; correction excludes explicit 4s/4p PSP valence.
+Ca_q10,1424.67308305,1425.30863004,2206.75882541,0.08126308351845891,clean,"Clean deep-core diagnostic; Ca q10 keeps 3s/3p/4s explicit, so semicore EFT is excluded."

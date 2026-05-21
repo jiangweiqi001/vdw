@@ -4,6 +4,81 @@ This note records the working derivation target for Milestone C. It is not yet a
 final theorem. Its purpose is to define the minimal correction that should be
 implemented and tested against the all-electron and PSP-RPA baselines.
 
+## 0. Milestone C Closure
+
+The derivation is closed at the level needed for the prototype if the EFT-core
+correction is formulated in terms of **response Wilson coefficients**, not by
+reusing the scalar bandwidth coefficient directly.
+
+The final working statement is:
+
+```text
+alpha_total(i xi)
+  = alpha_valence^PSP-RPA(i xi)
+  + alpha_core^EFT(i xi)
+```
+
+with
+
+```text
+alpha_core^EFT(i xi)
+  = sum_lambda f_lambda^EFT / (Delta_lambda^2 + xi^2)
+```
+
+where `lambda` labels core/semicore dipole-response channels that are absent
+from the explicit PSP valence space.
+
+Equivalently,
+
+```text
+f_lambda^EFT = (2/3) Delta_lambda |d_lambda^EFT|^2
+```
+
+for an isotropic atom.
+
+The dipole Wilson coefficient is defined by the long-wavelength density-response
+form factor:
+
+```text
+d_lambda,i^EFT = i partial_{q_i} tau_lambda(q)|_{q=0}
+```
+
+and not by the scalar bandwidth `f_K^c` alone.
+
+This closes the main ambiguity as follows:
+
+1. **finite imaginary xi**: once the response channel `lambda` and its Wilson
+   coefficient are matched, the finite-`xi` dependence is fixed by the spectral
+   pole `1 / (Delta_lambda^2 + xi^2)`. No extra fitting of the `xi` dependence is
+   introduced.
+2. **scalar to dipole**: the scalar PRL coefficient and the dipole vdW
+   coefficient are different Wilson coefficients in the same integrated-out-core
+   EFT. The scalar coefficient controls the quasiparticle frequency derivative;
+   the dipole coefficient controls density response to an external electric
+   field. They share the same core scales and matching logic but are not
+   algebraically identical.
+3. **alpha_cv**: the first additive implementation does not introduce a separate
+   `alpha_cv` oscillator. PSP-RPA is defined as the valence response in the
+   static pseudopotential background. The Casimir-Polder integral of
+   `alpha_valence + alpha_core` automatically includes the energy cross term
+   `2 alpha_valence alpha_core`. Additional collective valence-core mixing beyond
+   this additive response belongs to the future screened `W_v`/vertex-correction
+   stage.
+4. **double counting**: any shell explicitly present in the PSP valence space is
+   projected out of `alpha_core^EFT`. The correction is added only for absent
+   frozen shells.
+
+The current code implements two approximations to this closed form:
+
+```text
+EFT_CORE_SCALAR_PROXY              # diagnostic only
+EFT_CORE_DIPOLE_WILSON_MO_APPROX   # current l=1 dipole prototype
+```
+
+The second one is the physically relevant prototype because it uses a true
+dipole channel. It is still an MO approximation to `d_lambda^EFT`, not the final
+analytic multipole Wilson coefficient.
+
 ## 1. Starting Point
 
 The PRL EFT derivation integrates out frozen core states and gives the dynamic
@@ -140,6 +215,442 @@ Therefore the implementation should distinguish two cases:
 1. **Scalar bandwidth Wilson coefficient**: already used for `z_core`.
 2. **Dipole EFT response coefficient**: still to be derived or computed as the
    `l = 1` density-response Wilson coefficient.
+
+## 4.0 Multipole Derivation Of The `l = 1` Wilson Coefficient
+
+This section closes the formal relation between a multipole-resolved
+core-density form factor and the dipole oscillator channel used by the C6
+backend.
+
+Use the density convention
+
+```text
+rho(q) = integral d^3r exp(i q.r) rho(r).
+```
+
+For a core transition `lambda`, expand the transition density in spherical
+harmonics:
+
+```text
+rho_lambda(r)
+  = sum_lm rho_lambda,lm(r) Y_lm(rhat).
+```
+
+The Fourier-space transition density is
+
+```text
+tau_lambda(q)
+  = <0|rho(q)|lambda>
+  = 4 pi sum_lm i^l Y_lm(qhat)
+      integral_0^infty dr r^2 j_l(q r) rho_lambda,lm(r).
+```
+
+The Coulomb-dressed multipole Wilson coefficient is
+
+```text
+F_lambda,lm(q)
+  = v(q) tau_lambda,lm(q)
+  = (4 pi / q^2) tau_lambda,lm(q).
+```
+
+For `l = 1`, use the small-argument limit
+
+```text
+j_1(q r) = q r / 3 + O(q^3).
+```
+
+Then
+
+```text
+tau_lambda,1m(q)
+  = 4 pi i Y_1m(qhat) (q/3)
+      integral_0^infty dr r^3 rho_lambda,1m(r)
+    + O(q^3).
+```
+
+Therefore the Coulomb-dressed `l = 1` Wilson coefficient has the long-wavelength
+singularity
+
+```text
+F_lambda,1m(q)
+  = (16 pi^2 i / 3)
+    Y_1m(qhat)
+    [ integral dr r^3 rho_lambda,1m(r) ]
+    / q
+    + O(q).
+```
+
+The singularity is physical: a dipole transition density has no monopole
+moment, so `tau(q) ~ q`, while the Coulomb dressing contributes `1/q^2`.
+
+The undressed quantity that enters polarizability is recovered by removing the
+Coulomb factor:
+
+```text
+tau_lambda(q) = q^2 F_lambda(q) / (4 pi).
+```
+
+The Cartesian dipole Wilson vector is therefore
+
+```text
+d_lambda,i^EFT
+  = (1/i) partial_{q_i} tau_lambda(q)|_{q=0}
+```
+
+up to the sign convention for `exp(+-i q.r)`. The sign is irrelevant for C6
+because the oscillator strength depends on `|d_lambda|^2`.
+
+Equivalently, in spherical tensor notation,
+
+```text
+d_lambda,m^EFT
+  = sqrt(4 pi / 3)
+    integral_0^infty dr r^3 rho_lambda,1m(r).
+```
+
+This is the strict `l = 1` dipole Wilson coefficient. The scalar PRL coefficient
+is the `l = 0` object:
+
+```text
+F_c,00(q)  -> bandwidth / z_core matching
+F_lambda,1m(q) -> vdW dipole polarizability
+```
+
+They are different multipole projections of the integrated-out-core response.
+They share core excitation energies and the same EFT matching logic, but the
+dipole Wilson coefficient must be obtained from the `l = 1` transition density,
+not from the scalar `l = 0` form factor.
+
+The oscillator strength used by the backend is then
+
+```text
+f_lambda^osc
+  = (2/3) Delta_lambda sum_i |d_lambda,i^EFT|^2
+```
+
+or, for a closed-shell isotropic atom, the equivalent spherical-tensor sum over
+`m = -1,0,1`.
+
+The current `compute_dipole_wilson.py` implements this structure with atomic MO
+transition densities:
+
+```text
+rho_lambda(r) ~= phi_i*(r) phi_a(r)
+```
+
+for selected frozen shells. This is why its source label remains
+`EFT_CORE_DIPOLE_WILSON_MO_APPROX`: it is a genuine `l=1` dipole channel, but it
+is not yet an analytic core-only multipole Wilson coefficient computed directly
+from a standalone core transition-density solver.
+
+An intermediate improvement was implemented first:
+
+```text
+compute_core_tdhf_wilson.py
+```
+
+It computes the response of the isolated closed-shell core ion, e.g.
+
+```text
+Mg2+  -> Ne-like core
+Ca2+  -> Ar-like core
+```
+
+and exports the resulting TDHF transition dipoles as
+
+```text
+source = EFT_CORE_DIPOLE_WILSON_CORE_TDHF
+```
+
+This is closer to the desired EFT object than the neutral-atom MO transition
+approximation because the response is computed inside the core sector itself.
+It is still a TDHF proxy for the core transition density, not an analytic
+closed-form multipole Wilson coefficient.
+
+Current clean q2 validation:
+
+```text
+atom  C6_PSP      C6_PSP+core-ion-TDHF  Delta_C6  status
+Mg    638.6202    643.7337              +5.1136   clean
+Ca    1972.5599   2135.8960             +163.3361 clean
+```
+
+The core-ion TDHF proxy gives the same sign as the MO dipole approximation and a
+similar Ca magnitude, but a smaller Mg correction. This bracket is useful for
+estimating uncertainty in the current dipole Wilson approximation.
+
+The same transition-density contraction has now been made explicit:
+
+```text
+compute_multipole_core_wilson.py
+```
+
+For each TDHF excitation, the code forms the transition-density amplitude
+
+```text
+Gamma_lambda,ia = X_lambda,ia + Y_lambda,ia
+```
+
+and contracts it with the occupied-virtual dipole integrals:
+
+```text
+d_lambda = 2 sum_ia Gamma_lambda,ia <i|r|a>.
+```
+
+This is the discrete MO-basis version of
+
+```text
+d_lambda = integral r rho_lambda(r) d^3r
+```
+
+or equivalently the `q -> 0` derivative of `tau_lambda(q)`. The resulting
+oscillator strengths exactly reproduce the PySCF TDHF oscillator-strength route
+for the same core ion:
+
+```text
+Mg2+ sum_osc = 0.888436598687
+Ca2+ sum_osc = 5.333290310908
+```
+
+The output is:
+
+```text
+results/eft_core_multipole_wilson_channels.csv
+source = EFT_CORE_MULTIPOLE_TDENSITY_TDHF
+```
+
+This is the strictest implemented version of the `l=1` transition-density
+Wilson channel in the current repo. It still obtains the transition density from
+core-ion TDHF rather than from an analytic closed-form core solver, but it now
+implements the multipole/small-q definition explicitly rather than relying on a
+black-box oscillator-strength shortcut.
+
+## 4.1 Detailed Additive Derivation
+
+This section gives the closed additive derivation used by the current prototype.
+It is deliberately limited to the unscreened atomic C6 level; screened `W_v`
+appears only as the next extension.
+
+### 4.1.1 Core integration with an external source
+
+Introduce a scalar source `phi` coupled to the electronic density before
+integrating out the frozen core. For one ionic center `A`, the core sees
+
+```text
+Phi_A(r, tau)
+  = phi_ext(r, tau)
+  + integral dr' v(r-r') rho_v(r', tau)
+```
+
+where `rho_v` is the valence density and `v(q) = 4 pi / q^2`.
+
+After integrating out the core, the source-dependent effective action has the
+cumulant expansion
+
+```text
+S_core^eff[Phi]
+  = S_core^0
+  + integral n_c^0 Phi
+  - (1/2) integral Phi chi_c Phi
+  + O(Phi^3)
+```
+
+The first two terms are static: they contribute to core charge screening,
+exchange/orthogonality, and the fitted static pseudopotential. The quadratic
+term is the dynamic core density response. Only the nonlocal dynamic part of
+this quadratic response is eligible to generate a vdW correction.
+
+### 4.1.2 Lehmann representation of the core response
+
+Let `|lambda>` be an excited state of the isolated frozen-core sector with
+excitation energy
+
+```text
+Delta_lambda = E_lambda - E_0 > 0.
+```
+
+Define the transition density form factor
+
+```text
+tau_lambda(q) = <0 | rho_c(q) | lambda>.
+```
+
+Then the imaginary-frequency density response of an isolated center is
+
+```text
+chi_c^A(q, q'; i xi)
+  = sum_lambda
+      2 Delta_lambda
+      tau_lambda(q) tau_lambda*(q')
+      / (Delta_lambda^2 + xi^2)
+      exp[-i(q-q') . R_A].
+```
+
+This step resolves the finite-`xi` question for a matched response channel: once
+`Delta_lambda` and `tau_lambda` are specified, the entire imaginary-axis
+dependence is fixed by the spectral denominator. No additional finite-`xi` fit
+is introduced.
+
+### 4.1.3 Coulomb-dressed Wilson coefficient
+
+The core response enters the valence problem through Coulomb coupling. Define
+the Coulomb-dressed transition form factor
+
+```text
+F_lambda(q) = v(q) tau_lambda(q)
+            = 4 pi tau_lambda(q) / q^2.
+```
+
+Equivalently,
+
+```text
+tau_lambda(q) = q^2 F_lambda(q) / (4 pi).
+```
+
+The PRL bandwidth coefficient `f_K^c` has the same Coulomb-dressed structure,
+but it is the scalar channel relevant to the valence one-particle self-energy.
+For vdW, the required object is the `l = 1` component of the response form
+factor. We therefore denote the vdW coefficient by
+
+```text
+F_lambda,1m(q)
+```
+
+to avoid identifying it with the scalar bandwidth coefficient.
+
+The dipole Wilson coefficient is the long-wavelength derivative of the
+undressed transition density:
+
+```text
+d_lambda,i^EFT
+  = i partial_{q_i} tau_lambda(q)|_{q=0}
+  = i partial_{q_i} [q^2 F_lambda(q) / (4 pi)]_{q=0}.
+```
+
+This is the precise scalar-to-dipole resolution:
+
+```text
+scalar f_K^c        -> bandwidth z_core
+dipole F_lambda,1m  -> alpha_core(i xi)
+```
+
+They are related by the same integrated-out-core EFT and the same core energy
+scales, but they are not the same Wilson coefficient.
+
+### 4.1.4 Dipole polarizability
+
+The core contribution to the dipole polarizability tensor is
+
+```text
+alpha_c,ij(i xi)
+  = sum_lambda
+      2 Delta_lambda
+      d_lambda,i d_lambda,j*
+      / (Delta_lambda^2 + xi^2).
+```
+
+For an isotropic closed-shell atom,
+
+```text
+alpha_c(i xi)
+  = (1/3) Tr alpha_c,ij(i xi)
+  = sum_lambda f_lambda^EFT / (Delta_lambda^2 + xi^2),
+```
+
+with
+
+```text
+f_lambda^EFT
+  = (2/3) Delta_lambda |d_lambda^EFT|^2.
+```
+
+This is the backend-compatible oscillator-channel form.
+
+### 4.1.5 Additive PSP+EFT response and double counting
+
+For a pseudopotential calculation, the baseline response is
+
+```text
+alpha_valence^PSP-RPA(i xi),
+```
+
+computed from the explicit valence electrons in the static pseudopotential
+background.
+
+The first EFT-vdW implementation uses the additive response
+
+```text
+alpha_EFT(i xi)
+  = alpha_valence^PSP-RPA(i xi)
+  + P_frozen alpha_core^EFT(i xi) P_frozen,
+```
+
+where `P_frozen` is a shell-space projector that keeps only shells absent from
+the explicit PSP valence space.
+
+In practice the projector is implemented by metadata:
+
+```text
+explicit_valence_shells ∩ eft_core_shells = empty.
+```
+
+If the intersection is non-empty, the correction is a double-counting
+diagnostic, not a valid EFT-core benchmark.
+
+### 4.1.6 What happens to alpha_cv?
+
+The all-electron decomposition often contains
+
+```text
+alpha_all = alpha_v + alpha_c + alpha_cv.
+```
+
+In the additive PSP+EFT formulation, the explicit PSP-RPA response is defined as
+the valence response in the static pseudopotential background. Thus the first
+implementation assumes:
+
+```text
+alpha_cv,static-like -> encoded in PSP-valence orbitals and PSP-RPA baseline
+alpha_cv,dynamic collective screening -> deferred to screened W_v / vertex stage
+```
+
+The Casimir-Polder energy formed from
+
+```text
+alpha_valence + alpha_core
+```
+
+already contains the energy-level cross term
+
+```text
+2 alpha_valence alpha_core
+```
+
+in the product `alpha_A alpha_B`. What it does not contain is a new independent
+collective excitation where valence and core amplitudes mix dynamically inside
+one atom. That missing physics is outside the additive prototype and belongs to
+the screened/vertex-corrected theory.
+
+### 4.1.7 Current implementable formula
+
+The implemented benchmark formula is therefore:
+
+```text
+C6_PSP+EFT
+  = (3/pi) integral_0^infty dxi
+      [alpha_PSP(i xi) + alpha_core^EFT(i xi)]^2
+```
+
+with
+
+```text
+alpha_core^EFT(i xi)
+  = sum_{lambda in frozen shells}
+      f_lambda^EFT / (Delta_lambda^2 + xi^2).
+```
+
+This formula is the current Milestone C closure for atomic long-range C6. It is
+not yet the screened EFT-vdW functional.
 
 ## 5. Minimal Implementable Model
 
@@ -353,9 +864,11 @@ Interpretation of the clean rows:
   and the EFT correction shells are `2s,2p`, so the additive correction does not
   overlap the explicit PSP response. The current chain is
   `C6_PSP = 638.6202 -> C6_PSP+dipole = 647.6079 -> C6_all-e_PBE = 647.5881`.
-- Ca q2 is clean by shell overlap, but the current row uses `GTH-LDA-q2` with
-  `cc-pVQZ`; it should remain a clean diagnostic until a matched large-core Ca
-  PSP basis route is established.
+- Ca q2 is clean by shell overlap, but the available rows are basis diagnostics.
+  The strongest adapted row uses `GTH-PBE-q2` with
+  `TZV2P-MOLOPT-PBE-GTH-q10`, i.e. a q2 pseudopotential with a q10 UZH basis.
+  This pseudo-basis mismatch must be reported explicitly; it is diagnostic only
+  until a matched large-core Ca q2 basis is established.
 - These clean rows move the project from a pure double-counting diagnostic into
   a benchmark loop for at least Mg q2. The dipole channels are still an
   unscreened MO approximation to the EFT dipole Wilson coefficient, not the
@@ -389,16 +902,24 @@ Sr q2: explicit valence = 5s; EFT semicore = 4s,4p
 The immediate implementation task is to import or construct a matched q2 basis
 for Ca or Sr and keep the basis provenance explicit in the benchmark metadata.
 
-## 9. Open Questions
+## 9. Remaining Limitations
 
-Open derivation questions to resolve before claiming the full EFT-vdW method:
+The basic additive core-response derivation above is sufficient for the current
+prototype, but several limitations remain before claiming a full screened
+EFT-vdW functional:
 
-1. Is the finite-`xi` coefficient identical to the bandwidth Wilson coefficient,
-   or does the matching change away from `xi -> 0`?
-2. What is the correct `l = 1` dipole version of the PRL scalar form factor?
-3. Is `alpha_cv` captured by PSP-RPA, or does it need an explicit EFT cross term?
-4. What is the controlled error parameter for `C6`, where relevant `xi` may be
-   larger than the valence Fermi scale?
+1. The current code computes `d_lambda^EFT` with an all-electron MO dipole
+   approximation. A fully analytic multipole Wilson coefficient derived directly
+   from core form factors remains to be implemented.
+2. The scalar bandwidth `f_K^c` and the dipole response Wilson coefficient are
+   distinct. Cross-observable validation should compare their shell trends, not
+   assume equality.
+3. PSP-RPA plus additive `alpha_core^EFT` includes the Casimir-Polder energy
+   cross term but not full collective valence-core screening. That belongs to the
+   future `W_v` stage.
+4. The controlled error parameter for `C6` may differ from the bandwidth
+   parameter because the relevant imaginary frequencies can be larger than the
+   valence Fermi scale.
 
-These questions should be answered in the derivation and checked numerically
-before calling the correction a final screened EFT-vdW functional.
+These limitations do not block the current PSP+EFT-core benchmark loop. They do
+block any claim that the present code is a final screened EFT-vdW functional.

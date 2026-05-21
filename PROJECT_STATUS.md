@@ -191,6 +191,18 @@ This makes Mg q2 the first clean benchmark candidate. The correction is still
 an unscreened `l=1` MO dipole Wilson approximation, so it should be described as
 a benchmark loop rather than the final screened EFT-vdW method.
 
+The current implementation also includes a finite-system model-screened
+pairwise/logdet prototype:
+
+```text
+screened_pairwise_vdw.py
+screened_eft_vdw.py
+```
+
+This supports bare, dielectric, and Yukawa model `W_v` kernels. It verifies that
+the second-order logdet bare limit reproduces `-C6/R^6`. This is a model-screened
+interface, not an ab initio `W_v = (v^-1 - chi_v)^-1` implementation.
+
 Ca also has a clean-by-shell-overlap q2 diagnostic:
 
 ```text
@@ -199,8 +211,12 @@ C6_PSP+dipole_EFT:  2149.5021
 C6_all-e_LDA_TDDFT: 1982.7700
 ```
 
-However, the current Ca q2 row uses `GTH-LDA-q2 + cc-pVQZ`, so it should remain
-a diagnostic until a matched large-core Ca PSP basis is established.
+However, the current Ca q2 rows remain diagnostic. One route uses
+`GTH-LDA-q2 + cc-pVQZ`; the later adapted route uses `GTH-PBE-q2` with the
+`TZV2P-MOLOPT-PBE-GTH-q10` UZH basis. This is a pseudo-basis mismatch:
+the pseudopotential is q2 but the basis was optimized for q10. It should be
+reported only as `diagnostic`, not as a final matched Ca q2 benchmark, until a
+proper matched large-core Ca q2 basis is established.
 
 Recent clean non-q2 and Be consistency checks are useful negative controls:
 
@@ -262,6 +278,7 @@ Next steps:
 ## 8. Current Status In One Sentence
 
 This repository currently provides a working atomic response-to-C6 prototype
-with a clean Mg q2 PSP -> PSP+dipole-EFT -> all-electron benchmark loop, while
-the final screened EFT-vdW functional and production-quality Ca large-core PSP
-benchmark remain future work.
+with a clean Mg q2 PSP -> PSP+dipole-EFT -> all-electron benchmark loop, plus a
+model-screened pairwise/logdet interface. The final ab initio screened EFT-vdW
+functional, periodic implementation, forces, and production-quality Ca large-core
+PSP benchmark remain future work.

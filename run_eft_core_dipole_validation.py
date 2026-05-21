@@ -190,6 +190,41 @@ def run_validation(
     return summary
 
 
+def run_core_tdhf_validation(
+    input_path="results/eft_core_tdhf_wilson_channels.csv",
+    output="results/eft_core_tdhf_validation_summary.csv",
+):
+    rows = read_csv(input_path)
+    by_atom = {}
+    for row in rows:
+        by_atom.setdefault(row["atom"], []).append(row)
+    summary = []
+    output_root = Path("results/eft_core_tdhf")
+    for atom, correction_rows in sorted(by_atom.items()):
+        psp_path = BEST_PSP.get(atom)
+        if not psp_path or not Path(psp_path).exists():
+            continue
+        c6_psp, c6_total = _validate_atom(atom, psp_path, correction_rows, output_root)
+        status = double_counting_status(set(), PSP_EXPLICIT_VALENCE_SHELLS.get(atom))
+        summary.append(
+            {
+                "atom": atom,
+                "C6_psp": c6_psp,
+                "C6_psp_plus_core_tdhf": c6_total,
+                "Delta_C6_core_tdhf": c6_total - c6_psp,
+                "n_channels": len(correction_rows),
+                "double_counting_status": status,
+                "note": "core-ion TDHF transition-density proxy for EFT dipole Wilson",
+            }
+        )
+    write_table(
+        output,
+        summary,
+        ["atom", "C6_psp", "C6_psp_plus_core_tdhf", "Delta_C6_core_tdhf", "n_channels", "double_counting_status", "note"],
+    )
+    return summary
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Validate l=1 dipole Wilson channels by adding them to PSP-RPA channels.")
     parser.add_argument("--input", default="results/eft_core_dipole_wilson_channels.csv")

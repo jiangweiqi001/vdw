@@ -974,6 +974,44 @@ class EftPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(rows[0]["virt_energy_Ha"], 2.0)
         self.assertEqual(rows[0]["source"], "EFT_CORE_DIPOLE_WILSON_MO_APPROX")
 
+    def test_core_tdhf_wilson_rows_from_arrays(self):
+        from compute_core_tdhf_wilson import core_tdhf_rows_from_arrays
+
+        rows = core_tdhf_rows_from_arrays("Mg", [0.5, 1.0], [0.0, 2.0])
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["atom"], "Mg")
+        self.assertEqual(rows[0]["channel"], "core_tdhf_002")
+        self.assertAlmostEqual(rows[0]["delta_Ha"], 1.0)
+        self.assertAlmostEqual(rows[0]["osc"], 2.0)
+        self.assertEqual(rows[0]["source"], "EFT_CORE_DIPOLE_WILSON_CORE_TDHF")
+
+    def test_transition_density_dipole_reconstructs_oscillator_strength(self):
+        from compute_multipole_core_wilson import oscillator_from_transition_dipole
+
+        row = oscillator_from_transition_dipole(
+            atom="Mg",
+            state_index=1,
+            energy=2.0,
+            dipole_vector=np.array([3.0, 0.0, 0.0]),
+            source="unit",
+        )
+
+        self.assertEqual(row["channel"], "multipole_tdhf_001")
+        self.assertAlmostEqual(row["d2"], 9.0)
+        self.assertAlmostEqual(row["osc"], (2.0 / 3.0) * 2.0 * 9.0)
+
+    def test_transition_density_matrix_to_dipole_contracts_ov_integrals(self):
+        from compute_multipole_core_wilson import transition_density_dipole
+
+        dipole_ov = np.zeros((3, 1, 1))
+        dipole_ov[2, 0, 0] = 4.0
+        amplitudes = np.array([[0.5]])
+
+        dipole = transition_density_dipole(dipole_ov, amplitudes)
+
+        self.assertEqual(dipole.tolist(), [0.0, 0.0, 4.0])
+
     def test_double_counting_guard_blocks_overlapping_shells(self):
         from run_eft_core_dipole_validation import double_counting_status
 
@@ -987,6 +1025,52 @@ class EftPipelineTests(unittest.TestCase):
         status = double_counting_status({"2s", "2p"}, {"3s"})
 
         self.assertEqual(status, "clean")
+
+    def test_screened_pair_energy_recovers_bare_c6_tail(self):
+        from screened_pairwise_vdw import screened_pair_energy
+
+        self.assertAlmostEqual(screened_pair_energy(64.0, 2.0, model="bare"), -1.0)
+
+    def test_dielectric_screening_scales_tail_by_epsilon_squared(self):
+        from screened_pairwise_vdw import screened_pair_energy
+
+        bare = screened_pair_energy(64.0, 2.0, model="bare")
+        screened = screened_pair_energy(64.0, 2.0, model="dielectric", epsilon=2.0)
+
+        self.assertAlmostEqual(screened, bare / 4.0)
+
+    def test_logdet_vdw_second_order_matches_pair_tail_at_long_range(self):
+        from screened_eft_vdw import logdet_vdw_energy
+
+        channels = [
+            {"atom": "A", "delta_Ha": "2.0", "osc": "8.0"},
+            {"atom": "B", "delta_Ha": "2.0", "osc": "8.0"},
+        ]
+        positions = [[0.0, 0.0, 0.0], [0.0, 0.0, 20.0]]
+        energy = logdet_vdw_energy(channels, positions, atom_order=["A", "B"], n_quad=80, expansion_order=2)
+
+        # Single oscillator has alpha0=2 and self C6=6 for identical atoms.
+        self.assertAlmostEqual(energy, -6.0 / 20.0**6, delta=1e-8)
+
+    def test_logdet_vdw_dielectric_reduces_pair_tail(self):
+        from screened_eft_vdw import logdet_vdw_energy
+
+        channels = [
+            {"atom": "A", "delta_Ha": "2.0", "osc": "8.0"},
+            {"atom": "B", "delta_Ha": "2.0", "osc": "8.0"},
+        ]
+        positions = [[0.0, 0.0, 0.0], [0.0, 0.0, 20.0]]
+        bare = logdet_vdw_energy(channels, positions, atom_order=["A", "B"], n_quad=80, expansion_order=2)
+        screened = logdet_vdw_energy(
+            channels,
+            positions,
+            atom_order=["A", "B"],
+            n_quad=80,
+            expansion_order=2,
+            screening={"model": "dielectric", "epsilon": 2.0},
+        )
+
+        self.assertAlmostEqual(screened, bare / 4.0, delta=1e-10)
 
     def test_mg_q2_benchmark_row_computes_closure(self):
         from run_mg_q2_benchmark import benchmark_row
