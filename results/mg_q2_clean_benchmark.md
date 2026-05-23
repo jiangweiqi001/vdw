@@ -60,13 +60,13 @@ Main result:
 
 ```text
 C6_PSP                  = 638.62015545
-C6_PSP + EFT_dipole     = 647.60794451
-C6_all-electron PBE     = 647.58810040
+C6_PSP + EFT_dipole     = 647.69960692
+C6_all-electron PBE     = 647.58810041
 
 Delta_C6_missing        = 8.96794495
-Delta_C6_EFT            = 8.98778906
-residual_C6             = -0.01984411
-closure                 = 100.22%
+Delta_C6_EFT            = 9.07945147
+residual_C6             = -0.11150651
+closure                 = 101.24%
 ```
 
 The additive l=1 dipole correction essentially closes the PSP-to-all-electron
@@ -78,8 +78,8 @@ Two related implementations bracket the core correction:
 
 ```text
 neutral-atom MO dipole approximation:
-  C6_PSP + EFT = 647.60794451
-  Delta_C6     = +8.98778906
+  C6_PSP + EFT = 647.69960692
+  Delta_C6     = +9.07945147
 
 core-ion TDHF transition-density proxy:
   C6_PSP + EFT = 643.73374504
@@ -97,6 +97,29 @@ The explicit multipole transition-density implementation is:
 compute_multipole_core_wilson.py
 source = EFT_CORE_MULTIPOLE_TDENSITY_TDHF
 ```
+
+The small-q form factor check is stored in:
+
+```text
+results/multipole_form_factors_mg_core.csv
+```
+
+It explicitly evaluates, along the z axis,
+
+```text
+tau_lambda(q) = i q d_lambda,z + O(q^3)
+F_lambda(q) = 4 pi tau_lambda(q) / q^2
+```
+
+and verifies that:
+
+```text
+dipole_from_tau_z = tau_lambda(q) / (i q)
+```
+
+is independent of the small q value. This is the explicit transition-density /
+small-q Wilson check corresponding to the derivation in
+`docs/eft_core_alpha_derivation.md`.
 
 ## 5. Mg2 Long-Range Tail
 
@@ -118,7 +141,7 @@ Since this is a pure C6 tail, the percentage error is independent of R:
 
 ```text
 PSP error      = -1.3848%
-PSP+EFT error  = +0.0031%
+PSP+EFT error  = +0.0172%
 ```
 
 Thus the PSP-only tail is slightly too weak, while PSP+EFT essentially recovers
@@ -207,6 +230,7 @@ python3 run_mg_q2_model_screening_sensitivity.py
 The clean benchmark rows are recorded in:
 
 ```text
+results/mg_q2/summary.csv
 results/eft_core_dipole_validation_summary.csv
 results/mg/mg2_tail_comparison.csv
 results/mg/mg_q2_model_screening_sensitivity.csv

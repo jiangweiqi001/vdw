@@ -1,3 +1,2 @@
 atom,C6_psp,C6_psp_plus_dipole,Delta_C6_dipole,n_dipole_channels,correction_shells,psp_explicit_valence_shells,double_counting_status,note
-Ca,1972.55991054,2149.50211319,176.9422026499999,65,3p;3s,4s,clean,l=1 MO dipole Wilson approximation; unscreened additive test
-Mg,638.62015545,647.60794451,8.987789060000068,54,2p;2s,3s,clean,l=1 MO dipole Wilson approximation; unscreened additive test
+Mg,638.62015545,647.69960692,9.07945146999998,71,2p;2s,3s,clean,l=1 MO dipole Wilson approximation; unscreened additive test

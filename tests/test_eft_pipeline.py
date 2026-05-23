@@ -1012,6 +1012,22 @@ class EftPipelineTests(unittest.TestCase):
 
         self.assertEqual(dipole.tolist(), [0.0, 0.0, 4.0])
 
+    def test_multipole_form_factor_small_q_recovers_dipole_z_component(self):
+        from compute_multipole_form_factor import z_axis_tau_and_form_factor
+
+        row = z_axis_tau_and_form_factor(
+            atom="Mg",
+            state_index=1,
+            q=1e-4,
+            delta=2.0,
+            dipole_z=3.0,
+            oscillator_strength=12.0,
+        )
+
+        self.assertAlmostEqual(row["dipole_from_tau_z"], 3.0, places=6)
+        self.assertAlmostEqual(row["tau_q_imag"], 3.0e-4, places=8)
+        self.assertAlmostEqual(row["F_q_imag"], 4.0 * np.pi * 3.0 / 1e-4, places=3)
+
     def test_double_counting_guard_blocks_overlapping_shells(self):
         from run_eft_core_dipole_validation import double_counting_status
 
@@ -1109,6 +1125,21 @@ class EftPipelineTests(unittest.TestCase):
         self.assertEqual(row["benchmark_status"], "clean_candidate")
         self.assertAlmostEqual(row["closure_fraction"], 1.0022127834)
         self.assertAlmostEqual(row["residual_C6"], -0.01984412)
+
+    def test_mg_q2_clean_summary_row(self):
+        from run_mg_q2_clean_benchmark import summary_row
+
+        row = summary_row(
+            c6_psp=638.0,
+            c6_eft=647.0,
+            c6_all_e=648.0,
+            double_counting_status="clean",
+        )
+
+        self.assertAlmostEqual(row["Delta_C6_missing"], 10.0)
+        self.assertAlmostEqual(row["Delta_C6_EFT"], 9.0)
+        self.assertAlmostEqual(row["closure_pct"], 90.0)
+        self.assertEqual(row["double_counting_status"], "clean")
 
     def test_mg_q2_audit_flags_placeholder_paths(self):
         from run_mg_q2_benchmark import audit_row

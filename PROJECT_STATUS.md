@@ -182,7 +182,7 @@ PSP baseline:       Mg GTH-PBE-q2 / TZV2P-MOLOPT-SR-GTH-q2
 explicit valence:   3s
 EFT shells:         2s,2p
 C6_PSP:             638.6202
-C6_PSP+dipole_EFT:  647.6079
+C6_PSP+dipole_EFT:  647.6996
 C6_all-e_PBE_TDDFT: 647.5881
 double counting:    clean
 ```

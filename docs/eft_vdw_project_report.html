@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EFT-vdW Prototype Report</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1f2328;
+      --muted: #667085;
+      --line: #d0d7de;
+      --soft: #f6f8fa;
+      --accent: #0969da;
+      --good: #1a7f37;
+      --warn: #9a6700;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 40px 24px 72px;
+    }
+    header {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: 32px;
+      line-height: 1.2;
+      margin: 0 0 12px;
+    }
+    h2 {
+      font-size: 22px;
+      margin: 36px 0 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+    }
+    h3 {
+      font-size: 17px;
+      margin: 24px 0 8px;
+    }
+    p {
+      margin: 8px 0 14px;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    pre {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 22px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--soft);
+      font-weight: 600;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin: 18px 0 26px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+      background: var(--soft);
+    }
+    .card strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .muted {
+      color: var(--muted);
+    }
+    .tag {
+      display: inline-block;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-right: 6px;
+    }
+    .good { color: var(--good); font-weight: 600; }
+    .warn { color: var(--warn); font-weight: 600; }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: var(--soft);
+      padding: 12px 14px;
+      margin: 18px 0;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>EFT-vdW Prototype: Status Report</h1>
+    <p class="muted">
+      A static project report summarizing the implementation after reframing around issue #1:
+      all-electron reference, PSP-valence RPA baseline, and EFT-core correction diagnostics.
+    </p>
+    <span class="tag">Current stage: prototype</span>
+    <span class="tag">Backend: oscillator channels to alpha(i xi) and C6</span>
+    <span class="tag">Headline clean result: Mg q2</span>
+  </header>
+
+  <section>
+    <h2>1. Project Positioning</h2>
+    <p>
+      This repository implements an EFT-inspired prototype for computing long-range van der Waals
+      response from oscillator-channel data. The central pipeline is:
+    </p>
+    <pre>Delta_lambda, f_lambda^osc -> alpha(i xi) -> C6 -> E(R) = -C6 / R^6</pre>
+    <p>
+      The long-term goal is a screened EFT-vdW framework where frozen-core or semicore electronic
+      dynamics are explicit response channels, rather than being hidden inside a static pseudopotential.
+      The current repository is not yet a complete screened vdW functional.
+    </p>
+  </section>
+
+  <section>
+    <h2>2. What Has Been Implemented</h2>
+    <div class="grid">
+      <div class="card">
+        <strong>Core backend</strong>
+        <span class="muted">alpha(i xi), C6 integration, -C6/R6 tail, CSV channels</span>
+      </div>
+      <div class="card">
+        <strong>All-electron reference</strong>
+        <span class="muted">RKS-LDA/PBE + TDDFT for Ne, Ar, Kr, Mg, Ca</span>
+      </div>
+      <div class="card">
+        <strong>PSP-RPA baseline</strong>
+        <span class="muted">GTH pseudo-atom TDDFT with PySCF and external CP2K data</span>
+      </div>
+      <div class="card">
+        <strong>EFT-core diagnostics</strong>
+        <span class="muted">Scalar proxy and l=1 dipole Wilson/MO approximation</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Milestone A: All-Electron Reference</h2>
+    <p>
+      The all-electron KS reference leg is implemented with PySCF RKS plus TDDFT/TDA.
+      For the current prototype set, Milestone A is complete.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Atom</th>
+          <th>Best current KS-TDDFT row</th>
+          <th>C6</th>
+          <th>C6 error</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Ne</td><td>PBE / aug-cc-pVQZ / 200</td><td>7.0720</td><td>+10.85%</td><td>High vs reference</td></tr>
+        <tr><td>Ar</td><td>PBE / aug-cc-pVQZ / 200</td><td>68.2301</td><td>+6.11%</td><td>Good reference leg</td></tr>
+        <tr><td>Kr</td><td>PBE / aug-cc-pVQZ / 200</td><td>134.6496</td><td>+3.90%</td><td>Good reference leg</td></tr>
+        <tr><td>Mg</td><td>PBE / aug-cc-pVQZ / 200</td><td>647.5881</td><td>+3.28%</td><td>Used for Mg q2 benchmark</td></tr>
+        <tr><td>Ca</td><td>PBE / cc-pVQZ / 200</td><td>2206.7588</td><td>-0.64%</td><td>Ca aug basis unavailable in PySCF</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>4. Milestone B: PSP-Valence RPA Baseline</h2>
+    <p>
+      A genuine PSP-valence response route is implemented. It uses GTH pseudopotentials and GTH/CP2K
+      basis data, then runs RKS-TDDFT on the pseudo atom.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Atom</th>
+          <th>Current PSP row</th>
+          <th>C6 all-e</th>
+          <th>C6 PSP</th>
+          <th>Missing fraction</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Ne</td><td>gth-pbe / gth-qzv2p</td><td>7.0720</td><td>2.7319</td><td>61.4%</td></tr>
+        <tr><td>Ar</td><td>gth-pbe / gth-qzv2p</td><td>68.2301</td><td>41.8306</td><td>38.7%</td></tr>
+        <tr><td>Mg</td><td>GTH-PBE-q2 / TZV2P-MOLOPT-SR-q2</td><td>647.5881</td><td>638.6202</td><td>1.4%</td></tr>
+        <tr><td>Kr</td><td>GTH-PBE-q8 / TZV2P-MOLOPT-PBE-q8</td><td>134.6496</td><td>66.3555</td><td>50.7%</td></tr>
+        <tr><td>Ca</td><td>GTH-PBE-q10 / TZV2P-MOLOPT-PBE-q10</td><td>2206.7588</td><td>1424.6731</td><td>35.4%</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      Milestone B is closed for prototype purposes, but not production-level quantitative PSP-RPA.
+      The clean Mg q2 row is the strongest current PSP baseline.
+    </div>
+  </section>
+
+  <section>
+    <h2>5. Milestone C/D: EFT-Core Correction Diagnostics</h2>
+    <p>
+      Two diagnostic correction routes have been tested. The scalar proxy has the right sign but is too small.
+      The l=1 dipole Wilson/MO approximation gives physically relevant corrections.
+    </p>
+    <p>
+      The key comparison is not only the absolute C6 value, but how much of the
+      PSP-to-all-electron gap is closed by adding the EFT-core channel:
+    </p>
+    <pre>closure = (C6_PSP+EFT - C6_PSP) / (C6_all-electron - C6_PSP)</pre>
+    <table>
+      <thead>
+        <tr>
+          <th>Case</th>
+          <th>C6 PSP</th>
+          <th>C6 PSP + dipole</th>
+          <th>C6 all-electron</th>
+          <th>Delta C6</th>
+          <th>Closure</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Mg q2 clean</strong></td>
+          <td>638.6202</td>
+          <td>647.6079</td>
+          <td>647.5881</td>
+          <td class="good">+8.9878</td>
+          <td class="good">~100%</td>
+          <td class="good">Clean, strongest current benchmark</td>
+        </tr>
+        <tr>
+          <td>Ca q2 adapted</td>
+          <td>1496.3122</td>
+          <td>1658.0317</td>
+          <td>2206.7588</td>
+          <td class="good">+161.7194</td>
+          <td>22.8%</td>
+          <td class="warn">Clean by shell overlap, but q2 pseudo + q10 basis mismatch</td>
+        </tr>
+        <tr>
+          <td>Kr q8 clean</td>
+          <td>66.3555</td>
+          <td>69.2771</td>
+          <td>134.6496</td>
+          <td>+2.9216</td>
+          <td>4.3%</td>
+          <td>Clean negative/control case</td>
+        </tr>
+        <tr>
+          <td>Ca q10 deep core</td>
+          <td>1424.6731</td>
+          <td>1425.3086</td>
+          <td>2206.7588</td>
+          <td>+0.6355</td>
+          <td>0.08%</td>
+          <td>Deep-core-only diagnostic</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      This comparison separates two questions. The <strong>direction</strong>
+      asks whether the added channel moves C6 from PSP toward all-electron. The
+      <strong>closure</strong> asks how much of that missing response is actually recovered.
+      Mg q2 is the clean case where both are currently strongest: the large-core
+      PSP omits 2s/2p response, the dipole correction restores it, and the final
+      C6 essentially coincides with the all-electron PBE-TDDFT reference.
+    </p>
+    <p>
+      Ca q2 adapted is also in the right direction, but it is not a final basis
+      benchmark because the run combines a q2 pseudopotential with a q10 UZH
+      basis. It is useful as evidence that shallow semicore channels matter, but
+      it should remain labeled as an adapted diagnostic until a matched q2 basis
+      is available.
+    </p>
+  </section>
+
+  <section>
+    <h2>6. Headline Result</h2>
+    <p>
+      The clean Mg q2 benchmark is the strongest current evidence that the pipeline can identify and
+      add a missing frozen-core/semicore response without shell double counting.
+    </p>
+    <pre>Mg q2:
+PSP baseline       = 638.6202
+PSP + dipole EFT   = 647.6079
+All-e PBE TDDFT    = 647.5881
+Gap closed         = ~100%
+Double counting    = clean</pre>
+    <p>
+      This should be reported as a benchmark loop using an unscreened l=1 MO dipole Wilson approximation,
+      not as the final screened EFT-vdW functional.
+    </p>
+    <p>
+      In physical terms, the q2 Mg pseudopotential leaves only the 3s valence
+      shell explicit. The missing 2s/2p response is then added back as explicit
+      dipole channels. Because these shells are absent from the PSP valence
+      space, the double-counting guard marks the result clean.
+    </p>
+  </section>
+
+  <section>
+    <h2>7. Current Limitations</h2>
+    <ul>
+      <li>No valence-screened interaction W_v yet.</li>
+      <li>No screened pairwise or log-determinant vdW energy yet.</li>
+      <li>Ca q2 adapted result uses q2 pseudo with q10 UZH basis; diagnostic only.</li>
+      <li>The l=1 dipole channel is currently an atomic MO approximation, not a fully derived finite-xi Wilson coefficient.</li>
+      <li>Radial shell-average route remains diagnostic only due to TRK overcounting.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>8. Recommended Next Steps</h2>
+    <ol>
+      <li>Promote Mg q2 into the formal benchmark section of the project docs.</li>
+      <li>Search for a matched Ca or Sr q2 large-core basis to obtain a second strong clean benchmark.</li>
+      <li>Derive the finite-xi l=1 EFT Wilson coefficient more rigorously.</li>
+      <li>Implement a minimal model W_v screening only after the clean unscreened correction is stable.</li>
+      <li>Only then move toward screened pairwise and many-body/log-RPA forms.</li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>
