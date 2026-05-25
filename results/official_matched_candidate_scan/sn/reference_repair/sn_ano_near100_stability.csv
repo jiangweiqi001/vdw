@@ -1,0 +1,3 @@
+atom,basis,xc,method,spin,nstates,status,alpha0,C6,n_channels,sum_osc,note
+Sn,ano,pbe,TDDFT,2,50,ok_reused,52.60337059,470.39898966,21,,reused completed TDDFT channels
+Sn,ano,pbe,TDDFT,2,100,ok_reused,56.62325050,569.96394236,45,,reused completed TDDFT channels

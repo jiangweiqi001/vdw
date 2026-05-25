@@ -1,0 +1,2 @@
+atom,basis,xc,method,spin,nstates,status,nao,scf_converged,sum_osc,alpha0,C6,n_channels,channel_path,note
+Sn,ano,pbe,TDDFT,2,80,ok,139,True,3.5251736545393997,56.58522693,568.86558419,34,results/official_matched_candidate_scan/sn/reference_repair/sn_all_e_ano_tddft_nstates80_channels.csv,

@@ -58,9 +58,22 @@ Implemented:
 - Ar TDHF benchmark and Ar2 long-range tail
 - Ar basis, TDHF nstates, and oscillator-strength audit tables
 - TDHF core/valence/semicore decomposition for Ar, Kr, Mg, and Ca
+- PSP+EFT-core benchmark candidates:
+  - Mg q2 is the strongest clean matched-q2 benchmark
+  - Sn q4 is the strongest official-matched secondary candidate found so far
+  - Ge q4 is a weaker official-matched control
+- Generated-basis freeze/audit protocol for future Ca/Sr/Ba q2 work
 
 Not yet implemented:
 
 - Valence-screened `W_v`
 - RPA/log-determinant many-body energy
 - Periodic systems and forces
+
+## Current Benchmark Pointers
+
+- Project status: `PROJECT_STATUS.md`
+- Mg q2 benchmark: `results/mg_q2_clean_benchmark.md`
+- Sn q4 reference repair: `results/official_matched_candidate_scan/sn/reference_repair/summary.md`
+- Official-matched candidate scan: `results/official_matched_candidate_scan/summary.md`
+- Generated basis protocol: `docs/generated_basis_protocol.md`

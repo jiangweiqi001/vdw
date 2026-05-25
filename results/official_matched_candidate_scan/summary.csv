@@ -1,0 +1,7 @@
+atom,q,status,psp_basis,all_e_basis,active_shells,eft_shells,C6_PSP,C6_PSP_EFT,C6_all_e,Delta_C6_missing,Delta_C6_EFT,closure_pct,all_e_nstates,psp_nstates,note
+Al,3,fail,TZV2P-MOLOPT-PBE-GTH-q3,aug-cc-pVTZ,3s;3p,2p;2s,,,,,,,100,100,RuntimeError: Electron number 13 and spin 0 are not consistent
+Si,4,ok,TZV2P-MOLOPT-PBE-GTH-q4,aug-cc-pVTZ,3s;3p,2p;2s,149.19506801,150.84199296,337.70144156,188.50637354999998,1.646924949999999,0.8736706982287598,100,100,official matched PSP/basis; no generated basis
+P,5,fail,TZV2P-MOLOPT-PBE-GTH-q5,aug-cc-pVTZ,3s;3p,2p;2s,,,,,,,100,100,RuntimeError: Electron number 15 and spin 0 are not consistent
+S,6,ok,TZV2P-MOLOPT-PBE-GTH-q6,aug-cc-pVTZ,3s;3p,2p;2s,70.3829496,71.0798853,139.09741354,68.71446393999999,0.6969356999999974,1.014248907782424,100,100,official matched PSP/basis; no generated basis
+Cl,7,fail,TZV2P-MOLOPT-PBE-GTH-q7,aug-cc-pVTZ,3s;3p,2p;2s,,,,,,,100,100,RuntimeError: Electron number 17 and spin 0 are not consistent
+Ge,4,ok,TZV2P-MOLOPT-PBE-GTH-q4,aug-cc-pVQZ,4s;4p,3d,306.63037702,317.42318895,361.12514251,54.49476548999996,10.79281192999997,19.80522685611061,100,100,official matched PSP/basis; no generated basis

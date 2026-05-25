@@ -191,6 +191,36 @@ This makes Mg q2 the first clean benchmark candidate. The correction is still
 an unscreened `l=1` MO dipole Wilson approximation, so it should be described as
 a benchmark loop rather than the final screened EFT-vdW method.
 
+The best current official-matched secondary candidate is Sn q4:
+
+```text
+PSP baseline:       Sn GTH-PBE-q4 / TZV2P-MOLOPT-PBE-GTH-q4
+explicit valence:   5s,5p
+EFT shell:          4d
+C6_PSP:             474.0812
+C6_PSP+dipole_EFT:  566.1352
+C6_all-e_ANO_TDDFT: 576.9841  (nstates=150)
+closure:            89.46%
+double counting:    clean
+```
+
+Sn q4 is not yet as final as Mg q2 because its all-electron reference is more
+delicate. Full TDDFT/ANO is stable from 80 to 150 states at the few-percent
+level, but TDA gives a much larger reference C6. Therefore Sn q4 should be
+reported as a strong official-matched candidate with a reference-method caveat.
+
+Ge q4 is the best weaker official-matched control:
+
+```text
+PSP baseline:       Ge GTH-PBE-q4 / TZV2P-MOLOPT-PBE-GTH-q4
+explicit valence:   4s,4p
+EFT shell:          3d
+C6_PSP:             306.6594
+C6_PSP+dipole_EFT:  317.4539
+C6_all-e_augQZ:     375.5721
+closure:            15.66%
+```
+
 The current implementation also includes a finite-system model-screened
 pairwise/logdet prototype:
 
@@ -235,50 +265,57 @@ of the PBE/LDA mismatch in the Be q2 diagnostic. Kr q8 and Ca q10 similarly
 show that deep-core-only additive corrections are too small for the current
 benchmark goal.
 
-The next production-quality benchmark therefore still needs a large-core
-alkaline-earth case where the missing shell is semicore, not deep core:
+The next production-quality alkaline-earth benchmark still needs a large-core
+q2 route where the missing shell is semicore, not deep core:
 
 ```text
 Ca q2: explicit PSP valence = 4s; EFT shells = 3s,3p
 Sr q2: explicit PSP valence = 5s; EFT shells = 4s,4p
 ```
 
-The local CP2K scan found Ca/Sr/Ba q2 pseudos but no matched q2 basis for these
-targets. The active task is now to import or construct a clearly labeled
-large-core q2 basis route for Ca or Sr.
+The local and online CP2K scans found Ca/Sr/Ba q2 pseudopotentials but no
+reliable matched q2 basis blocks for these targets. Generated-basis work is now
+guarded by `docs/generated_basis_protocol.md`, which requires freezing and
+hashing a generated basis before any vdW validation.
 
 ## 7. Near-Term Roadmap
 
 Next steps:
 
-1. Import or construct a matched large-core q2 basis route for Ca or Sr:
+1. Decide how to present the second benchmark:
+   - headline remains Mg q2
+   - Sn q4 is the strongest official-matched secondary candidate, with a
+     reference-method caveat
+   - Ge q4 is a weaker official-matched control
+2. Import or construct a matched large-core q2 basis route for Ca or Sr:
    - target Ca q2: `GTH-*-q2` with explicit `4s`
    - target Sr q2: `GTH-*-q2` with explicit `5s`
    - require a PySCF build/RKS/TDDFT smoke test before benchmark use
-2. Re-run the clean benchmark chain for the first successful Ca/Sr route:
+3. Re-run the clean benchmark chain for the first successful Ca/Sr route:
    - PSP valence-only TDDFT
    - PSP + `l=1` dipole EFT semicore correction
    - all-electron TDDFT reference with the same XC backend where possible
-3. Clean up documentation and make all current benchmarks reproducible.
-4. Add plots for:
+4. Clean up documentation and make all current benchmarks reproducible.
+5. Add plots for:
    - noble gas TDHF benchmark
    - semicore/core correction summary
    - Ca basis sensitivity
-5. Add Ca2 long-range tail comparison:
+6. Add Ca2 long-range tail comparison:
    - all-electron TDHF
    - valence-only
    - valence+semicore
-6. Begin screened-pairwise prototype with a model `W_v`:
+7. Begin screened-pairwise prototype with a model `W_v`:
    - bare
    - dielectric
    - Yukawa/Thomas-Fermi
-7. Later: implement finite-system log/MBD energy.
-8. Long term: connect to ab initio valence response `W_v` and periodic systems.
+8. Later: implement finite-system log/MBD energy.
+9. Long term: connect to ab initio valence response `W_v` and periodic systems.
 
 ## 8. Current Status In One Sentence
 
 This repository currently provides a working atomic response-to-C6 prototype
 with a clean Mg q2 PSP -> PSP+dipole-EFT -> all-electron benchmark loop, plus a
-model-screened pairwise/logdet interface. The final ab initio screened EFT-vdW
-functional, periodic implementation, forces, and production-quality Ca large-core
-PSP benchmark remain future work.
+strong official-matched Sn q4 secondary candidate and a model-screened
+pairwise/logdet interface. The final ab initio screened EFT-vdW functional,
+periodic implementation, forces, and production-quality alkaline-earth
+large-core PSP benchmark remain future work.

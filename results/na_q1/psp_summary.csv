@@ -1,0 +1,2 @@
+atom,psp,basis,xc,nstates,method,active_electrons,active_shells,alpha0_psp,C6_psp,n_channels,status,note
+Na,GTH-PBE-q1,TZV2P-MOLOPT-PBE-GTH-q1,pbe,100,TDDFT,1,,119.49038331,991.05881416,6,ok,

@@ -1,0 +1,6 @@
+atom,q,correction_route,status,C6_PSP,C6_PSP_EFT,C6_all_e,Delta_C6_missing,Delta_C6_EFT,closure_pct,note
+Al,3,core_ion_multipole_tdhf,ok,243.0535153,245.41012255,579.04752745,335.99401215,2.3566072500000246,0.701383704703627,closed-shell core ion TDHF; official matched PSP/basis; no generated basis; core_sum_osc=1.0766193819373333
+Si,4,core_ion_multipole_tdhf,ok,149.19506801,150.63999198,337.70144156,188.50637354999998,1.4449239699999907,0.7665119978644833,closed-shell core ion TDHF; official matched PSP/basis; no generated basis; core_sum_osc=1.3459345785901506
+P,5,core_ion_multipole_tdhf,ok,125.04243104,126.24552611,201.16269394,76.1202629,1.2030950700000034,1.5805188055912551,closed-shell core ion TDHF; official matched PSP/basis; no generated basis; core_sum_osc=1.9397996649744866
+S,6,core_ion_multipole_tdhf,ok,70.3829496,71.0233717,139.09741354,68.71446393999999,0.640422099999995,0.9320047967764079,closed-shell core ion TDHF; official matched PSP/basis; no generated basis; core_sum_osc=1.7767701658365873
+Cl,7,core_ion_multipole_tdhf,ok,80.32314934,80.84330247,68.88274213,-11.440407210000004,0.5201531299999971,-4.5466312557942326,closed-shell core ion TDHF; official matched PSP/basis; no generated basis; core_sum_osc=1.9427747574294165

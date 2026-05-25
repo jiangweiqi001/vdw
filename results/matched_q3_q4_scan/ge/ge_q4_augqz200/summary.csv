@@ -1,0 +1,2 @@
+case,psp,psp_basis,psp_nstates,all_e_basis,all_e_nstates,active_shells,eft_shells,C6_PSP,C6_PSP_EFT,C6_all_e,Delta_C6_missing,Delta_C6_EFT,residual_C6,closure_fraction,closure_pct,double_counting_status,note
+Ge_q4_augqz200_reference,GTH-PBE-q4,TZV2P-MOLOPT-PBE-GTH-q4,200,aug-cc-pVQZ,200,4s;4p,3d,306.65944141,317.45391425,375.57206997,68.91262855999997,10.794472840000026,58.11815571999995,0.15663998116980302,15.663998116980302,clean,Official matched Ge q4 PSP/basis; all-electron reference uses aug-cc-pVQZ nstates=200; all-e still not fully converged.

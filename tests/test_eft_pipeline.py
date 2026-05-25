@@ -1469,6 +1469,115 @@ class EftPipelineTests(unittest.TestCase):
         self.assertEqual(row["candidate_status"], "tddft_smoke_ok")
         self.assertEqual(row["basis_provenance"], "adapted_from_q10")
 
+    def test_generated_basis_freeze_record_includes_hash_and_protocol_label(self):
+        from generated_basis_protocol import build_freeze_record
+
+        with TemporaryDirectory() as tmp:
+            basis_path = Path(tmp) / "Ca-q2-generated-v1.bas"
+            basis_path.write_text("Ca generated basis\n1 0 0\n", encoding="utf-8")
+
+            record = build_freeze_record(
+                element="Ca",
+                pseudo_name="GTH-PBE-q2",
+                basis_name="Ca-q2-generated-v1",
+                basis_path=basis_path,
+                generation_method="fixed even-tempered non-vdW protocol",
+                allowed_targets=["atomic total energy convergence", "SCF robustness"],
+                notes="unit test record",
+            )
+
+        self.assertEqual(record["element"], "Ca")
+        self.assertEqual(record["benchmark_label"], "generated_protocol_frozen")
+        self.assertEqual(record["frozen_before_vdw_validation"], "true")
+        self.assertEqual(len(record["basis_sha256"]), 64)
+        self.assertEqual(record["forbidden_targets_used"], "false")
+        self.assertIn("atomic total energy convergence", record["allowed_targets"])
+
+    def test_generated_basis_freeze_record_rejects_vdw_targets(self):
+        from generated_basis_protocol import build_freeze_record
+
+        with TemporaryDirectory() as tmp:
+            basis_path = Path(tmp) / "Ca-q2-generated-v1.bas"
+            basis_path.write_text("Ca generated basis\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "Forbidden vdW target"):
+                build_freeze_record(
+                    element="Ca",
+                    pseudo_name="GTH-PBE-q2",
+                    basis_name="Ca-q2-generated-v1",
+                    basis_path=basis_path,
+                    generation_method="invalid C6 fitting",
+                    allowed_targets=["C6 closure"],
+                    notes="should be rejected",
+                )
+
+    def test_generated_basis_freeze_cli_writes_json_record(self):
+        from generated_basis_protocol import main
+
+        with TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            basis_path = tmp_path / "Ca-q2-generated-v1.bas"
+            output_path = tmp_path / "freeze_record.json"
+            basis_path.write_text("Ca generated basis\n", encoding="utf-8")
+
+            record = main(
+                [
+                    "--element", "Ca",
+                    "--pseudo", "GTH-PBE-q2",
+                    "--basis-name", "Ca-q2-generated-v1",
+                    "--basis-file", str(basis_path),
+                    "--generation-method", "fixed non-vdW protocol",
+                    "--allowed-target", "atomic total energy convergence",
+                    "--allowed-target", "SCF robustness",
+                    "--output", str(output_path),
+                    "--note", "unit test",
+                ]
+            )
+
+            self.assertTrue(output_path.exists())
+
+        self.assertEqual(record["element"], "Ca")
+        self.assertEqual(record["basis_name"], "Ca-q2-generated-v1")
+        self.assertEqual(record["benchmark_label"], "generated_protocol_frozen")
+
+    def test_project_local_basis_generation_renames_cp2k_header_and_records_provenance(self):
+        from generate_project_local_basis import generate_basis_from_cp2k_seed
+
+        with TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            seed_path = tmp_path / "BASIS_SEED"
+            output_path = tmp_path / "Ca-q2-generated-v1.bas"
+            provenance_path = tmp_path / "Ca-q2-generated-v1.provenance.json"
+            seed_path.write_text(
+                "\n".join(
+                    [
+                        "Ca TZV2P-MOLOPT-PBE-GTH-q10 TZV2P-MOLOPT-GGA-GTH-q10",
+                        " 1",
+                        " 2 0 2 2 1 1 1",
+                        "  1.0  0.1 0.2 0.3",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            record = generate_basis_from_cp2k_seed(
+                atom="Ca",
+                source_basis_file=seed_path,
+                source_basis_name="TZV2P-MOLOPT-PBE-GTH-q10",
+                generated_basis_name="Ca-q2-generated-v1",
+                output_basis_file=output_path,
+                provenance_file=provenance_path,
+            )
+
+            generated = output_path.read_text(encoding="utf-8").splitlines()
+
+        self.assertEqual(generated[0], "Ca Ca-q2-generated-v1")
+        self.assertIn(" 2 0 2 2 1 1 1", generated)
+        self.assertEqual(record["basis_provenance"], "project_local_generated_from_cp2k_seed")
+        self.assertEqual(record["source_basis_name"], "TZV2P-MOLOPT-PBE-GTH-q10")
+        self.assertEqual(record["generated_basis_name"], "Ca-q2-generated-v1")
+
     @staticmethod
     def _write_csv(path, fieldnames, rows):
         with open(path, "w", newline="", encoding="utf-8") as fp:

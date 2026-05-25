@@ -1,0 +1,2 @@
+atom,psp,basis,xc,nstates,method,active_electrons,active_shells,alpha0_psp,C6_psp,n_channels,status,note
+Li,GTH-LDA-q1,TZV2P-MOLOPT-PBE-GTH-q1,lda,100,TDDFT,1,,125.80080667,925.53342264,6,ok,

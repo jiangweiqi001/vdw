@@ -98,11 +98,11 @@ def load_cp2k_pseudo(atom, pseudo_file, pseudo_name):
     return parse_cp2k_pp.parse(extract_cp2k_named_block(pseudo_file, atom, pseudo_name))
 
 
-def export_psp_response(atom, psp="gth-lda", basis="gth-dzvp", xc="lda", nstates=50, method="TDDFT", min_osc=1e-10):
+def export_psp_response(atom, psp="gth-lda", basis="gth-dzvp", xc="lda", nstates=50, method="TDDFT", min_osc=1e-10, spin=0):
     from pyscf import gto, scf, tdscf
 
-    mol = gto.M(atom=f"{atom} 0 0 0", basis=basis, pseudo=psp, spin=0, charge=0, cart=False, verbose=0)
-    mf = scf.RKS(mol)
+    mol = gto.M(atom=f"{atom} 0 0 0", basis=basis, pseudo=psp, spin=int(spin), charge=0, cart=False, verbose=0)
+    mf = scf.UKS(mol) if int(spin) else scf.RKS(mol)
     mf.xc = XC_MAP[xc]
     mf.verbose = 0
     mf.kernel()
@@ -133,6 +133,7 @@ def run_atom(
     basis_name=None,
     pseudo_file=None,
     pseudo_name=None,
+    spin=0,
 ):
     output_dir = Path(output_root) / atom.lower() / f"{psp}_{basis}_{xc}_{method.lower()}".replace("/", "_")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -154,7 +155,7 @@ def run_atom(
         pseudo_obj = psp
         psp_label = psp
 
-    rows, meta = export_psp_response(atom, pseudo_obj, basis_obj, xc, nstates, method, min_osc=min_osc)
+    rows, meta = export_psp_response(atom, pseudo_obj, basis_obj, xc, nstates, method, min_osc=min_osc, spin=spin)
     write_channels(channels_path, rows)
     alpha_rows = build_alpha_rows(channels_path)
     write_alpha_rows(alpha_path, alpha_rows)
@@ -198,6 +199,7 @@ def main(argv=None):
     parser.add_argument("--pseudo-name", default=None)
     parser.add_argument("--nstates", type=int, default=50)
     parser.add_argument("--method", choices=["TDDFT", "TDA"], default="TDDFT")
+    parser.add_argument("--spin", type=int, default=0)
     parser.add_argument("--output-root", default="results/psp_rpa")
     parser.add_argument("--summary", default="results/psp_rpa_summary.csv")
     args = parser.parse_args(argv)
@@ -215,6 +217,7 @@ def main(argv=None):
             basis_name=args.basis_name,
             pseudo_file=args.pseudo_file,
             pseudo_name=args.pseudo_name,
+            spin=args.spin,
         )
     except Exception as exc:
         row = unavailable_row(args.atom, args.psp, args.basis, args.xc, args.nstates, f"{type(exc).__name__}: {exc}", args.method)

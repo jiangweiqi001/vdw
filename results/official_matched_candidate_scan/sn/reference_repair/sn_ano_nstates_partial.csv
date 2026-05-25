@@ -1,0 +1,5 @@
+atom,basis,xc,method,spin,nstates,status,alpha0,C6,note
+Sn,ano,pbe,TDDFT,2,50,ok,52.60337059,470.39898966,
+Sn,ano,pbe,TDDFT,2,100,ok,56.62325050,569.96394236,
+Sn,ano,pbe,TDDFT,2,150,stopped,,,,150-state calculation exceeded the interactive time budget
+Sn,ano,pbe,TDDFT,2,200,not_run,,,,not run because 150-state calculation was stopped

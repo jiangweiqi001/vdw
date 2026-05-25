@@ -1,0 +1,10 @@
+atom,pseudo,basis,xc,method,active_electrons,nao,status,note
+K,GTH-LDA-q1,TZV2P-MOLOPT-PBE-GTH-q9,lda,UKS-TDDFT,1,23,ok,"adapted diagnostic: q1 pseudo with q9 basis; open-shell"
+K,GTH-LDA-q1,TZVP-MOLOPT-PBE-GTH-q9,lda,UKS-TDDFT,1,18,ok,"adapted diagnostic: q1 pseudo with q9 basis; open-shell"
+K,GTH-LDA-q1,DZVP-MOLOPT-PBE-GTH-q9,lda,UKS-TDDFT,1,14,ok,"adapted diagnostic: q1 pseudo with q9 basis; open-shell"
+K,GTH-LDA-q1,TZV2P-MOLOPT-SR-GTH-q9,lda,UKS-TDDFT,1,23,ok,"adapted diagnostic: q1 pseudo with q9 basis; open-shell"
+Rb,GTH-LDA-q1,TZV2P-MOLOPT-PBE-GTH-q9,lda,UKS-TDDFT,1,23,ok,"adapted diagnostic: q1 pseudo with q9 basis; open-shell"
+Rb,GTH-LDA-q1,TZVP-MOLOPT-PBE-GTH-q9,lda,UKS-TDDFT,1,18,ok,"adapted diagnostic: q1 pseudo with q9 basis; open-shell"
+Rb,GTH-LDA-q1,DZVP-MOLOPT-PBE-GTH-q9,lda,UKS-TDDFT,1,14,ok,"adapted diagnostic: q1 pseudo with q9 basis; open-shell"
+Rb,GTH-LDA-q1,TZV2P-MOLOPT-SR-GTH-q9,lda,UKS-TDDFT,1,23,ok,"adapted diagnostic: q1 pseudo with q9 basis; open-shell"
+Cs,GTH-LDA-q1,DZVP-MOLOPT-PBE-GTH-q9,lda,UKS-TDDFT,1,14,ok,"adapted diagnostic only; TZV/TZV2P q9 basis produced near-zero oscillator strength in smoke test"

@@ -1,0 +1,14 @@
+{
+  "allowed_targets": "PSP SCF convergence;occupied orbital eigenvalue stability;basis parse/build reproducibility",
+  "basis_name": "Sr-q2-generated-v1",
+  "basis_path": "generated_basis/Sr-q2-generated-v1.bas",
+  "basis_sha256": "26f985fdbe6c1aa56e6563ac485b84f3753f6374f428282063a61b1a58d12a65",
+  "benchmark_label": "generated_protocol_frozen",
+  "element": "Sr",
+  "forbidden_targets_used": "false",
+  "frozen_at_utc": "2026-05-24T16:19:47+00:00",
+  "frozen_before_vdw_validation": "true",
+  "generation_method": "fixed CP2K q10 seed relabel protocol; numeric basis block unchanged; no vdW feedback",
+  "notes": "Frozen before PSP-RPA, alpha0, C6, or PSP+EFT closure validation.",
+  "pseudo_name": "GTH-PBE-q2"
+}

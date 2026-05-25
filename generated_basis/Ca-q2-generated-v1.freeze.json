@@ -1,0 +1,14 @@
+{
+  "allowed_targets": "PSP SCF convergence;occupied orbital eigenvalue stability;basis parse/build reproducibility",
+  "basis_name": "Ca-q2-generated-v1",
+  "basis_path": "generated_basis/Ca-q2-generated-v1.bas",
+  "basis_sha256": "0bd7511717e0714e095d0938838c7602cde9ac5c0201875cfdac186397a8dacc",
+  "benchmark_label": "generated_protocol_frozen",
+  "element": "Ca",
+  "forbidden_targets_used": "false",
+  "frozen_at_utc": "2026-05-24T15:01:42+00:00",
+  "frozen_before_vdw_validation": "true",
+  "generation_method": "fixed CP2K q10 seed relabel protocol; numeric basis block unchanged; no vdW feedback",
+  "notes": "Frozen before PSP-RPA, alpha0, C6, or PSP+EFT closure validation.",
+  "pseudo_name": "GTH-PBE-q2"
+}

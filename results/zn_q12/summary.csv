@@ -1,0 +1,2 @@
+case,C6_PSP,C6_PSP_EFT,C6_all_e,all_e_basis,Delta_C6_missing,Delta_C6_EFT,closure_pct,double_counting_status,note
+Zn_q12_PBE,205.69372433,206.70011861,264.40891493,cc-pVTZ,58.71519059999997,1.006394279999995,1.7140271022129585,clean,"matched q12 PBE PSP/basis; explicit 3d10 4s2, EFT frozen 3s/3p"

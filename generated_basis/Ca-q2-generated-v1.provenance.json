@@ -1,0 +1,12 @@
+{
+  "atom": "Ca",
+  "basis_provenance": "project_local_generated_from_cp2k_seed",
+  "generated_at_utc": "2026-05-24T15:01:42+00:00",
+  "generated_basis_file": "generated_basis/Ca-q2-generated-v1.bas",
+  "generated_basis_name": "Ca-q2-generated-v1",
+  "generated_basis_sha256": "0bd7511717e0714e095d0938838c7602cde9ac5c0201875cfdac186397a8dacc",
+  "generation_rule": "copy numeric CP2K seed block unchanged and replace header with project-local generated basis name",
+  "source_basis_file": "external_data/cp2k/BASIS_MOLOPT_UZH",
+  "source_basis_name": "TZV2P-MOLOPT-PBE-GTH-q10",
+  "vdw_targets_used": "false"
+}

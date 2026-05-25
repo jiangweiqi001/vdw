@@ -1,0 +1,3 @@
+atom,psp,psp_basis,all_e_basis,all_e_nstates,eft_shells,eft_basis,C6_PSP,C6_PSP_EFT,C6_all_e,Delta_C6_missing,Delta_C6_EFT,closure_pct,n_eft_channels,sum_osc_eft,status,note
+Sn,GTH-PBE-q4,TZV2P-MOLOPT-PBE-GTH-q4,ano,100,4d,def2-TZVP,474.07715109,760.53316244,569.96394236,95.88679127000006,286.45601135,298.74397459332124,32,22.980251319579494,ok,Sn ANO reference repair; no generated basis
+Sn,GTH-PBE-q4,TZV2P-MOLOPT-PBE-GTH-q4,ano,100,4d,ano,474.07715109,566.13108046,569.96394236,95.88679127000006,92.05392937000005,96.00272170000207,160,18.34068664859852,ok,Sn ANO reference repair; no generated basis

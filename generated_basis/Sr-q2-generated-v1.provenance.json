@@ -1,0 +1,12 @@
+{
+  "atom": "Sr",
+  "basis_provenance": "project_local_generated_from_cp2k_seed",
+  "generated_at_utc": "2026-05-24T16:19:47+00:00",
+  "generated_basis_file": "generated_basis/Sr-q2-generated-v1.bas",
+  "generated_basis_name": "Sr-q2-generated-v1",
+  "generated_basis_sha256": "26f985fdbe6c1aa56e6563ac485b84f3753f6374f428282063a61b1a58d12a65",
+  "generation_rule": "copy numeric CP2K seed block unchanged and replace header with project-local generated basis name",
+  "source_basis_file": "external_data/cp2k/BASIS_MOLOPT_UZH",
+  "source_basis_name": "TZV2P-MOLOPT-PBE-GTH-q10",
+  "vdw_targets_used": "false"
+}
