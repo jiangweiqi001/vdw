@@ -863,6 +863,14 @@ class EftPipelineTests(unittest.TestCase):
 
         self.assertEqual(row["active_shells"], "3s")
 
+    def test_psp_rpa_summary_infers_d10_large_and_small_core_shells(self):
+        from run_psp_rpa_atom import infer_active_shells
+
+        self.assertEqual(infer_active_shells("Zn", 2), "4s")
+        self.assertEqual(infer_active_shells("Zn", 12), "3d;4s")
+        self.assertEqual(infer_active_shells("Cd", 2), "5s")
+        self.assertEqual(infer_active_shells("Cd", 12), "4d;5s")
+
     def test_dipole_validation_uses_clean_mg_q2_path(self):
         from run_eft_core_dipole_validation import BEST_PSP
 
@@ -986,6 +994,152 @@ class EftPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(rows[0]["osc"], 2.0)
         self.assertEqual(rows[0]["source"], "EFT_CORE_DIPOLE_WILSON_CORE_TDHF")
 
+    def test_core_sternheimer_alpha_matches_finite_basis_oscillators(self):
+        from compute_core_sternheimer import sternheimer_alpha_iw_from_arrays, sternheimer_channels_from_arrays
+        from eft_alpha import alpha_iw_from_osc
+
+        mo_energy = [0.0, 1.0, 2.0, 4.0]
+        mo_occ = [2.0, 2.0, 0.0, 0.0]
+        dipole_mo = np.zeros((3, 4, 4))
+        dipole_mo[0, 1, 2] = 2.0
+        dipole_mo[1, 1, 3] = 1.0
+        mo_to_shell = {0: "1s", 1: "3d", 2: "4p", 3: "5p"}
+
+        xi = np.array([0.0, 0.5, 2.0])
+        alpha_sternheimer = sternheimer_alpha_iw_from_arrays(
+            xi=xi,
+            mo_energy=mo_energy,
+            mo_occ=mo_occ,
+            dipole_mo=dipole_mo,
+            mo_to_shell=mo_to_shell,
+            selected_shells={"3d"},
+        )
+        rows = sternheimer_channels_from_arrays(
+            atom="Zn",
+            mo_energy=mo_energy,
+            mo_occ=mo_occ,
+            dipole_mo=dipole_mo,
+            mo_to_shell=mo_to_shell,
+            selected_shells={"3d"},
+        )
+        alpha_channels = alpha_iw_from_osc(
+            xi,
+            [row["delta_Ha"] for row in rows],
+            [row["osc"] for row in rows],
+        )
+
+        self.assertEqual(len(rows), 2)
+        self.assertTrue(np.allclose(alpha_sternheimer, alpha_channels))
+        self.assertTrue(all(row["source"] == "CORE_STERNHEIMER_FINITE_BASIS" for row in rows))
+
+    def test_core_sternheimer_channels_feed_existing_alpha_pipeline(self):
+        from compute_core_sternheimer import sternheimer_channels_from_arrays, write_channels
+        from run_alpha_table import build_alpha_rows
+
+        with TemporaryDirectory() as tmp:
+            channels_path = Path(tmp) / "zn_core_sternheimer_channels.csv"
+            mo_energy = [0.0, 1.0, 3.0]
+            mo_occ = [2.0, 2.0, 0.0]
+            dipole_mo = np.zeros((3, 3, 3))
+            dipole_mo[2, 1, 2] = 3.0
+            rows = sternheimer_channels_from_arrays(
+                atom="Zn",
+                mo_energy=mo_energy,
+                mo_occ=mo_occ,
+                dipole_mo=dipole_mo,
+                mo_to_shell={0: "1s", 1: "3d", 2: "4p"},
+                selected_shells={"3d"},
+            )
+            write_channels(channels_path, rows)
+
+            alpha_rows = build_alpha_rows(channels_path)
+
+        self.assertEqual(alpha_rows[0]["atom"], "Zn")
+        self.assertEqual(alpha_rows[0]["n_channels"], 1)
+        self.assertAlmostEqual(float(alpha_rows[0]["alpha0_au"]), 6.0)
+
+    def test_radial_grid_sternheimer_matches_grid_spectral_expansion(self):
+        from compute_core_sternheimer_radial_grid import (
+            finite_difference_hamiltonian,
+            spectral_alpha_from_hamiltonian,
+            sternheimer_alpha_from_hamiltonian,
+        )
+
+        r = np.linspace(0.05, 12.0, 80)
+        source_u = r * np.exp(-r)
+        source_u /= np.sqrt(np.trapezoid(source_u * source_u, r))
+        potential = -1.0 / r
+        hamiltonian = finite_difference_hamiltonian(r, l_value=1, potential=potential)
+        xi = np.array([0.0, 0.4, 1.5])
+
+        alpha_sternheimer = sternheimer_alpha_from_hamiltonian(
+            r=r,
+            hamiltonian=hamiltonian,
+            epsilon_occ=-0.5,
+            source_u=source_u,
+            occupation=2.0,
+            l_occ=0,
+            l_resp=1,
+            xi=xi,
+        )
+        alpha_spectral, sum_osc = spectral_alpha_from_hamiltonian(
+            r=r,
+            hamiltonian=hamiltonian,
+            epsilon_occ=-0.5,
+            source_u=source_u,
+            occupation=2.0,
+            l_occ=0,
+            l_resp=1,
+            xi=xi,
+        )
+
+        self.assertGreater(sum_osc, 0.0)
+        self.assertTrue(np.allclose(alpha_sternheimer, alpha_spectral, rtol=1e-9, atol=1e-9))
+
+    def test_radial_grid_spectral_moments_separate_signed_and_absorption_sums(self):
+        from compute_core_sternheimer_radial_grid import spectral_moments_from_hamiltonian
+
+        r = np.linspace(0.1, 1.0, 10)
+        hamiltonian = np.diag([-1.0, 2.0] + [5.0] * 8)
+        source_u = np.zeros_like(r)
+        source_u[0] = 1.0
+        source_u[1] = 1.0
+
+        moments = spectral_moments_from_hamiltonian(
+            r=r,
+            hamiltonian=hamiltonian,
+            epsilon_occ=0.0,
+            source_u=source_u,
+            occupation=2.0,
+            l_occ=0,
+            l_resp=1,
+        )
+
+        self.assertLess(moments["signed_sum_osc"], moments["positive_sum_osc"])
+        self.assertLess(moments["negative_sum_osc"], 0.0)
+        self.assertEqual(moments["n_negative_delta"], 1)
+
+    def test_alpha_constrained_local_field_scale_uses_static_polarizability_gap(self):
+        from run_radial_cphf_alpha_constrained_validation import local_field_scale, scale_core_rows
+
+        scale = local_field_scale(alpha_target=45.0, alpha_psp=37.0, alpha_core=4.0)
+        rows = scale_core_rows(
+            [
+                {
+                    "atom": "Cd",
+                    "delta_Ha": "1.0",
+                    "osc": "2.0",
+                    "source": "RADIAL",
+                }
+            ],
+            scale,
+        )
+
+        self.assertAlmostEqual(scale, 2.0)
+        self.assertAlmostEqual(float(rows[0]["osc"]), 4.0)
+        self.assertAlmostEqual(float(rows[0]["local_field_scale"]), 2.0)
+        self.assertIn("STATIC_ALPHA_LOCAL_FIELD_CONSTRAINED", rows[0]["source"])
+
     def test_transition_density_dipole_reconstructs_oscillator_strength(self):
         from compute_multipole_core_wilson import oscillator_from_transition_dipole
 
@@ -1041,6 +1195,314 @@ class EftPipelineTests(unittest.TestCase):
         status = double_counting_status({"2s", "2p"}, {"3s"})
 
         self.assertEqual(status, "clean")
+
+    def test_semicore_c6_target_audit_accepts_large_core_zn(self):
+        from semicore_c6_targets import audit_semicore_target
+
+        row = audit_semicore_target("Zn", active_electrons=2, active_shells="4s")
+
+        self.assertEqual(row["audit_status"], "pass")
+        self.assertEqual(row["correction_shells"], "3d")
+        self.assertEqual(row["no_double_count"], "true")
+
+    def test_semicore_c6_target_audit_rejects_small_core_zn_q12(self):
+        from semicore_c6_targets import audit_semicore_target
+
+        row = audit_semicore_target("Zn", active_electrons=12, active_shells="3d;4s")
+
+        self.assertEqual(row["audit_status"], "fail")
+        self.assertEqual(row["shell_overlap"], "3d")
+        self.assertEqual(row["active_count_ok"], "false")
+
+    def test_semicore_c6_validation_summary_computes_closure_and_go_status(self):
+        from run_semicore_c6_validation import validation_summary_row
+
+        row = validation_summary_row(
+            atom="Zn",
+            psp_row={"C6_self_au": "100.0"},
+            corrected_row={"C6_self_au": "180.0"},
+            all_e_row={"C6_self_au": "200.0"},
+            active_electrons=2,
+            active_shells="4s",
+            reference_c6="190.0",
+        )
+
+        self.assertEqual(row["double_counting_status"], "clean")
+        self.assertAlmostEqual(row["Delta_C6_core"], 80.0)
+        self.assertAlmostEqual(row["closure_pct"], 80.0)
+        self.assertAlmostEqual(row["reference_error_pct"], -1000.0 / 190.0)
+        self.assertEqual(row["go_no_go"], "go")
+
+    def test_semicore_reference_errors_compare_both_models_to_all_references(self):
+        from run_semicore_reference_errors import build_error_rows
+
+        with TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            summary_path = tmp_path / "summary.csv"
+            references_path = tmp_path / "references.csv"
+            self._write_csv(
+                summary_path,
+                [
+                    "atom",
+                    "dimer",
+                    "active_electrons",
+                    "active_shells",
+                    "correction_shells",
+                    "C6_PSP",
+                    "C6_PSP_plus_sternheimer",
+                    "Delta_C6_core",
+                    "double_counting_status",
+                    "target_audit_status",
+                    "C6_all_e",
+                    "closure_pct",
+                    "C6_reference",
+                    "reference_error_pct",
+                    "go_no_go",
+                ],
+                [
+                    {
+                        "atom": "Zn",
+                        "dimer": "Zn2",
+                        "active_electrons": "2",
+                        "active_shells": "4s",
+                        "correction_shells": "3d",
+                        "C6_PSP": "100.0",
+                        "C6_PSP_plus_sternheimer": "120.0",
+                        "Delta_C6_core": "20.0",
+                        "double_counting_status": "clean",
+                        "target_audit_status": "pass",
+                        "C6_all_e": "",
+                        "closure_pct": "",
+                        "C6_reference": "",
+                        "reference_error_pct": "",
+                        "go_no_go": "",
+                    }
+                ],
+            )
+            self._write_csv(
+                references_path,
+                ["A", "B", "C6_ref", "reference_label", "source"],
+                [
+                    {
+                        "A": "Zn",
+                        "B": "Zn",
+                        "C6_ref": "80.0",
+                        "reference_label": "low",
+                        "source": "unit",
+                    },
+                    {
+                        "A": "Zn",
+                        "B": "Zn",
+                        "C6_ref": "150.0",
+                        "reference_label": "high",
+                        "source": "unit",
+                    },
+                ],
+            )
+
+            rows = build_error_rows([summary_path], references_path)
+
+        self.assertEqual(len(rows), 4)
+        by_model_ref = {(row["model"], row["reference_label"]): row for row in rows}
+        self.assertAlmostEqual(by_model_ref[("psp", "low")]["error_pct"], 25.0)
+        self.assertAlmostEqual(by_model_ref[("psp_plus_sternheimer", "high")]["error_pct"], -20.0)
+
+    def test_semicore_diagnostic_summary_combines_raw_and_trk_variants(self):
+        from run_semicore_diagnostic_summary import build_rows
+
+        with TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            raw_path = tmp_path / "raw.csv"
+            trk_path = tmp_path / "trk.csv"
+            refs_path = tmp_path / "refs.csv"
+            trk_meta_path = tmp_path / "trk_meta.csv"
+            fieldnames = [
+                "atom",
+                "dimer",
+                "active_electrons",
+                "active_shells",
+                "correction_shells",
+                "C6_PSP",
+                "C6_PSP_plus_sternheimer",
+                "Delta_C6_core",
+                "double_counting_status",
+                "target_audit_status",
+                "C6_all_e",
+                "closure_pct",
+                "C6_reference",
+                "reference_error_pct",
+                "go_no_go",
+            ]
+            self._write_csv(
+                raw_path,
+                fieldnames,
+                [
+                    {
+                        "atom": "Cd",
+                        "dimer": "Cd2",
+                        "active_electrons": "2",
+                        "active_shells": "5s",
+                        "correction_shells": "4d",
+                        "C6_PSP": "100.0",
+                        "C6_PSP_plus_sternheimer": "160.0",
+                        "Delta_C6_core": "60.0",
+                        "double_counting_status": "clean",
+                        "target_audit_status": "pass",
+                        "C6_all_e": "200.0",
+                        "closure_pct": "60.0",
+                        "C6_reference": "150.0",
+                        "reference_error_pct": "",
+                        "go_no_go": "review",
+                    }
+                ],
+            )
+            self._write_csv(
+                trk_path,
+                fieldnames,
+                [
+                    {
+                        "atom": "Cd",
+                        "dimer": "Cd2",
+                        "active_electrons": "2",
+                        "active_shells": "5s",
+                        "correction_shells": "4d",
+                        "C6_PSP": "100.0",
+                        "C6_PSP_plus_sternheimer": "130.0",
+                        "Delta_C6_core": "30.0",
+                        "double_counting_status": "clean",
+                        "target_audit_status": "pass",
+                        "C6_all_e": "200.0",
+                        "closure_pct": "30.0",
+                        "C6_reference": "150.0",
+                        "reference_error_pct": "",
+                        "go_no_go": "review",
+                    }
+                ],
+            )
+            self._write_csv(
+                refs_path,
+                ["A", "B", "C6_ref", "reference_label", "source"],
+                [{"A": "Cd", "B": "Cd", "C6_ref": "150.0", "reference_label": "unit", "source": "unit"}],
+            )
+            self._write_csv(
+                trk_meta_path,
+                ["atom", "raw_sum_osc", "trk_scale"],
+                [{"atom": "Cd", "raw_sum_osc": "20.0", "trk_scale": "0.5"}],
+            )
+
+            rows = build_rows([raw_path], [trk_path], refs_path, trk_meta_path)
+
+        by_variant = {row["variant"]: row for row in rows}
+        self.assertAlmostEqual(by_variant["raw_finite_basis"]["corrected_error_pct"], 100.0 * 10.0 / 150.0)
+        self.assertAlmostEqual(by_variant["trk_normalized"]["corrected_error_pct"], -100.0 * 20.0 / 150.0)
+        self.assertEqual(by_variant["trk_normalized"]["raw_sum_osc"], 20.0)
+        self.assertEqual(by_variant["trk_normalized"]["trk_scale"], 0.5)
+
+    def test_semicore_workflow_selects_clean_tddft_large_core_candidate(self):
+        from run_semicore_c6_workflow import select_runnable_candidate
+
+        rows = [
+            {
+                "atom": "Zn",
+                "pseudo_name": "GTH-PBE-q12",
+                "basis_label": "TZV2P-MOLOPT-PBE-GTH-q12",
+                "candidate_status": "tddft_smoke_ok",
+                "active_electrons": "12",
+                "active_shells": "3d;4s",
+            },
+            {
+                "atom": "Zn",
+                "pseudo_name": "GTH-LDA-q2",
+                "basis_label": "TZV2P-MOLOPT-PBE-GTH-q2",
+                "basis_block_name": "TZV2P-MOLOPT-PBE-GTH-q2",
+                "basis_file": "external_data/cp2k/BASIS_MOLOPT_UZH",
+                "pseudo_file": "external_data/cp2k/GTH_POTENTIALS",
+                "candidate_status": "tddft_smoke_ok",
+                "active_electrons": "2",
+                "active_shells": "4s",
+            },
+        ]
+
+        selected = select_runnable_candidate("Zn", rows)
+
+        self.assertEqual(selected["pseudo_name"], "GTH-LDA-q2")
+        self.assertEqual(selected["basis_label"], "TZV2P-MOLOPT-PBE-GTH-q2")
+
+    def test_semicore_workflow_reports_unavailable_target_with_audit_context(self):
+        from run_semicore_c6_workflow import unavailable_target_row
+
+        row = unavailable_target_row(
+            "Cd",
+            [
+                {
+                    "atom": "Cd",
+                    "pseudo_name": "GTH-LDA-q2",
+                    "basis_label": "",
+                    "candidate_status": "no_matched_q2_basis",
+                    "note": "no matched q2 basis found",
+                }
+            ],
+        )
+
+        self.assertEqual(row["atom"], "Cd")
+        self.assertEqual(row["workflow_status"], "unavailable")
+        self.assertEqual(row["dimer"], "Cd2")
+        self.assertEqual(row["expected_active_shells"], "5s")
+        self.assertEqual(row["correction_shells"], "4d")
+        self.assertIn("no_matched_q2_basis", row["note"])
+
+    def test_semicore_workflow_marks_missing_pyscf_as_environment_blocked(self):
+        from run_semicore_c6_workflow import unavailable_target_row
+
+        row = unavailable_target_row(
+            "Sr",
+            [
+                {
+                    "atom": "Sr",
+                    "pseudo_name": "GTH-PBE-q2",
+                    "basis_label": "TZV2P-MOLOPT-PBE-GTH-q10-as-q2-adapted",
+                    "candidate_status": "build_failed",
+                    "note": "ModuleNotFoundError: No module named 'pyscf'",
+                }
+            ],
+        )
+
+        self.assertEqual(row["workflow_status"], "environment_blocked")
+        self.assertEqual(row["expected_active_shells"], "5s")
+        self.assertEqual(row["correction_shells"], "4p;4s")
+
+    def test_semicore_sr_validation_config_preserves_ready_candidate_provenance(self):
+        from run_semicore_sr_validation import validation_config_from_target
+
+        config = validation_config_from_target(
+            {
+                "atom": "Sr",
+                "workflow_status": "candidate_ready",
+                "pseudo_name": "GTH-PBE-q2",
+                "basis_label": "TZV2P-MOLOPT-PBE-GTH-q10-as-q2-adapted",
+                "basis_block_name": "TZV2P-MOLOPT-PBE-GTH-q10",
+                "basis_file": "external_data/cp2k/BASIS_MOLOPT_UZH",
+                "pseudo_file": "external_data/cp2k/POTENTIAL_UZH_CASR_Q2",
+                "active_electrons": "2",
+                "active_shells": "5s",
+                "correction_shells": "4p;4s",
+            },
+            output_root="results/unit_sr_validation",
+        )
+
+        self.assertEqual(config["atom"], "Sr")
+        self.assertEqual(config["xc"], "pbe")
+        self.assertEqual(config["basis_name"], "TZV2P-MOLOPT-PBE-GTH-q10")
+        self.assertEqual(config["basis_label"], "TZV2P-MOLOPT-PBE-GTH-q10-as-q2-adapted")
+        self.assertEqual(config["correction_shells"], {"4s", "4p"})
+        self.assertEqual(config["reference_c6"], 3170.0)
+        self.assertIn("GTH-PBE-q2_TZV2P-MOLOPT-PBE-GTH-q10-as-q2-adapted_pbe_tddft", str(config["psp_channels_path"]))
+
+    def test_semicore_sr_validation_rejects_non_ready_target(self):
+        from run_semicore_sr_validation import validation_config_from_target
+
+        with self.assertRaisesRegex(ValueError, "candidate_ready"):
+            validation_config_from_target({"atom": "Sr", "workflow_status": "environment_blocked"})
 
     def test_screened_pair_energy_recovers_bare_c6_tail(self):
         from screened_pairwise_vdw import screened_pair_energy
@@ -1424,6 +1886,87 @@ class EftPipelineTests(unittest.TestCase):
         ])
 
         self.assertEqual(ranked[0], "TZV2P-MOLOPT-SR-GTH-q2")
+
+    def test_q2_scan_accepts_multiple_pseudo_files_and_keeps_failure_provenance(self):
+        import probe_large_core_q2_candidates as probe
+
+        def fake_discover(path, atom, required_token="q2"):
+            if str(path).endswith("POTENTIAL_A"):
+                return ["GTH-LDA-q2"]
+            if str(path).endswith("POTENTIAL_B"):
+                return ["GTH-PBE-q2"]
+            return ["TZV2P-MOLOPT-PBE-GTH-q2"]
+
+        def fake_smoke(atom, pseudo_file, pseudo_name, basis_file, basis_name, xc="pbe", nstates=3, run_tddft=True):
+            raise RuntimeError(f"blocked {pseudo_file} {basis_file}")
+
+        old_discover = probe.discover_file_headers
+        old_smoke = probe.smoke_candidate
+        try:
+            probe.discover_file_headers = fake_discover
+            probe.smoke_candidate = fake_smoke
+            rows = probe.scan_candidates(
+                atoms=["Sr"],
+                pseudo_file=["POTENTIAL_A", "POTENTIAL_B"],
+                basis_files=["BASIS_A"],
+                run_tddft=False,
+            )
+        finally:
+            probe.discover_file_headers = old_discover
+            probe.smoke_candidate = old_smoke
+
+        by_pseudo = {row["pseudo_name"]: row for row in rows}
+        self.assertEqual(sorted(by_pseudo), ["GTH-LDA-q2", "GTH-PBE-q2"])
+        self.assertEqual(by_pseudo["GTH-PBE-q2"]["pseudo_file"], "POTENTIAL_B")
+        self.assertEqual(by_pseudo["GTH-PBE-q2"]["basis_file"], "BASIS_A")
+        self.assertEqual(by_pseudo["GTH-PBE-q2"]["basis_block_name"], "TZV2P-MOLOPT-PBE-GTH-q2")
+
+    def test_semicore_sr_smoke_runner_documents_wsl_pyscf_scan_contract(self):
+        script = ROOT / "scripts" / "run_semicore_sr_smoke.sh"
+        text = script.read_text(encoding="utf-8")
+
+        self.assertIn("set -euo pipefail", text)
+        self.assertIn(".venv/bin/python", text)
+        self.assertIn("import pyscf", text)
+        self.assertIn("--atom Sr", text)
+        self.assertIn("--pseudo-file external_data/cp2k/GTH_POTENTIALS", text)
+        self.assertIn("--pseudo-file external_data/cp2k/POTENTIAL_UZH_CASR_Q2", text)
+        self.assertIn("--candidate-basis-csv external_data/cp2k/large_core_q2_basis_candidates.csv", text)
+        self.assertIn("results/semicore_c6_q2_candidate_scan_wsl.csv", text)
+        self.assertIn("results/semicore_c6_workflow_targets_wsl.csv", text)
+
+    def test_semicore_sr_smoke_runner_uses_unix_line_endings(self):
+        script = ROOT / "scripts" / "run_semicore_sr_smoke.sh"
+
+        data = script.read_bytes()
+
+        self.assertNotIn(b"\r\n", data)
+
+    def test_wsl_pyscf_setup_script_creates_venv_and_installs_requirements(self):
+        script = ROOT / "scripts" / "setup_wsl_pyscf_env.sh"
+        text = script.read_text(encoding="utf-8")
+        data = script.read_bytes()
+
+        self.assertIn("set -euo pipefail", text)
+        self.assertIn('BOOTSTRAP_PYTHON="${BOOTSTRAP_PYTHON:-python3}"', text)
+        self.assertIn("-m venv", text)
+        self.assertIn("pip install -r requirements.txt", text)
+        self.assertIn("import pyscf", text)
+        self.assertNotIn(b"\r\n", data)
+
+    def test_semicore_sr_validation_runner_uses_smoke_targets_and_venv(self):
+        script = ROOT / "scripts" / "run_semicore_sr_validation.sh"
+        text = script.read_text(encoding="utf-8")
+        data = script.read_bytes()
+
+        self.assertIn("set -euo pipefail", text)
+        self.assertIn(".venv/bin/python", text)
+        self.assertIn('bash scripts/run_semicore_sr_smoke.sh', text)
+        self.assertIn("run_semicore_sr_validation.py", text)
+        self.assertIn('TARGETS="${TARGETS:-results/semicore_c6_workflow_targets_wsl.csv}"', text)
+        self.assertIn('--targets "$TARGETS"', text)
+        self.assertIn("results/semicore_sr_validation", text)
+        self.assertNotIn(b"\r\n", data)
 
     def test_imported_q2_candidate_basis_records_provenance(self):
         from probe_large_core_q2_candidates import load_imported_basis_candidates

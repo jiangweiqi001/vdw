@@ -278,6 +278,163 @@ reliable matched q2 basis blocks for these targets. Generated-basis work is now
 guarded by `docs/generated_basis_protocol.md`, which requires freezing and
 hashing a generated basis before any vdW validation.
 
+### 6.1 Group XII Large-Core Semicore Status
+
+The current Zn/Cd work targets the student-task direction: large-core q2
+pseudopotentials with explicit outer `ns` valence and missing `d10` semicore
+response.
+
+Current candidates:
+
+```text
+Zn: GTH-LDA-q2 + TZV2P/TZVP/DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted
+    explicit PSP shell = 4s; correction shell = 3d
+
+Cd: GTH-LDA-q2 + QZVPP/TZVPP/SVP-MOLOPT-PBE-GTH-q20-as-q2-adapted
+    explicit PSP shell = 5s; correction shell = 4d
+```
+
+No library-native matched q2 basis was found for Zn/Cd in the local CP2K files
+or in the public CP2K `BASIS_MOLOPT_UZH`, `BASIS_MOLOPT`,
+`BASIS_MOLOPT_UCL`, and `GTH_BASIS_SETS` files checked online. The current
+Zn/Cd rows therefore remain adapted-basis diagnostics, not final matched-q2
+benchmarks.
+
+The reference policy is documented in `docs/semicore_reference_policy.md`.
+For this proof-of-concept, the primary Group XII reference scale is:
+
+```text
+Zn2: 257.5 a.u. measurement, with 225 and 276 as alternate checks
+Cd2: 493 a.u. present calculation and 466 a.u. measurement
+```
+
+The `359/686` QDO/CCSD(T)-table values are retained as high-reference stress
+tests. Any go/no-go statement must report both raw finite-basis and
+TRK-normalized diagnostics. Raw finite-basis data alone cannot justify a `go`.
+
+Basis sensitivity:
+
+```text
+Zn raw finite-basis:
+  TZV2P/TZVP: C6_PSP = 244.46, C6_PSP+core = 285.75
+  DZVP:       C6_PSP = 240.21, C6_PSP+core = 281.12
+  status: basis-stable, reference-sensitive
+
+Cd raw finite-basis:
+  QZVPP: C6_PSP = 271.09, C6_PSP+core = 508.39
+  TZVPP: C6_PSP = 171.09, C6_PSP+core = 381.32
+  SVP:   C6_PSP = 238.35, C6_PSP+core = 459.59
+  status: promising against Group XII references in QZVPP/SVP, but
+          adapted-basis-sensitive
+```
+
+The finite-basis Sternheimer diagnostic shows that the current d10 core channels
+over-saturate the TRK sum in the useful bases:
+
+```text
+Zn 3d10: sum_osc / N_core about 1.9
+Cd 4d10: sum_osc / N_core about 2.2 for def2-TZVPP/ano-rcc
+```
+
+TRK-normalized diagnostics reduce the corrections substantially:
+
+```text
+Zn: C6_PSP+core 285.75 -> 264.69
+Cd: C6_PSP+core 508.39 -> 364.87
+```
+
+The current classification is `review` for both Zn2 and Cd2. Cd raw finite-basis
+is close to the Group XII references, but TRK-normalized Cd is not:
+
+```text
+Cd raw finite-basis:       +3.1% vs 493, +9.1% vs 466
+Cd TRK-normalized:        -26.0% vs 493, -21.7% vs 466
+```
+
+Cd all-electron closure is handled through literature proxy targets rather than
+the local `ano-rcc` TDHF result. The local `ano-rcc` TDHF calculation gives
+`alpha0 = 86.30` and `C6 = 811.86`, which is too high compared with the standard
+Cd polarizability scale and the high-reference `686` C6. It is retained only as
+a diagnostic control. The Cd literature closure proxy table is
+`results/semicore_zn_cd_validation/cd_literature_closure_proxy.csv`.
+
+A first radial-grid Sternheimer prototype now exists in
+`compute_core_sternheimer_radial_grid.py`. It solves the imaginary-frequency
+response directly in a radial box, so it is no longer a Gaussian virtual-MO sum.
+The current `ano-rcc` smoke diagnostics are:
+
+```text
+Zn 3d10: cphf_alpha0_core = 3.6082, cphf_C6_self_core = 7.1652
+         signed_sum_osc / N_core = 0.9921
+         raw_positive_sum_osc / N_core = 1.5040
+         cphf_positive_sum_osc / N_core = 1.0000
+         operator_trk_pass = true, psp_go_no_go_ready = true
+Cd 4d10: cphf_alpha0_core = 4.6156, cphf_C6_self_core = 18.1363
+         signed_sum_osc / N_core = 0.9796
+         raw_positive_sum_osc / N_core = 1.5486
+         cphf_positive_sum_osc / N_core = 1.0000
+         operator_trk_pass = true, psp_go_no_go_ready = true
+```
+
+This is now folded into the PSP C6 workflow as a Pauli-positive radial continuum
+channel set with a shell TRK constrained CPHF/local-field scale. It passes the
+oscillator gate, but the resulting C6 values are still `review`, not `go`:
+
+```text
+Zn2: C6_PSP = 244.46 -> C6_PSP+radial_CPHF = 320.62
+     error vs 257.5 measurement = +24.5%
+
+Cd2: C6_PSP = 271.09 -> C6_PSP+radial_CPHF = 397.21
+     error vs 493 present calculation = -19.4%
+```
+
+The continuum response therefore fixes the oscillator-strength bookkeeping
+problem but not the final Zn/Cd physics target. The next method step is to
+improve the physical CPHF kernel/central field and validate it against dynamic
+polarizability or better all-electron response data.
+
+A static-alpha constrained local-field kernel is now implemented in
+`run_radial_cphf_alpha_constrained_validation.py`. It uses the radial continuum
+CPHF channel spectrum, then constrains the observable local-field response to
+published static polarizabilities from
+`reference_static_polarizability_group12.csv` rather than fitting C6 directly:
+
+```text
+Zn alpha0 reference: 37.95 +/- 0.77 a.u.
+Cd alpha0 reference: 45.68 +/- 1.21 a.u.
+```
+
+The resulting kernel scales and C6 values are:
+
+```text
+Zn:
+  alpha0_PSP = 37.7369
+  alpha0_core_unconstrained = 3.6082
+  local_field_scale = 0.0591
+  C6_PSP = 244.46 -> C6_PSP+alpha_constrained_CPHF = 248.56
+  error vs 257.5 measurement = -3.47%
+
+Cd:
+  alpha0_PSP = 37.4355
+  alpha0_core_unconstrained = 4.6156
+  local_field_scale = 1.7862
+  C6_PSP = 271.09 -> C6_PSP+alpha_constrained_CPHF = 521.84
+  error vs 493 present calculation = +5.85%
+```
+
+This is the first Zn/Cd radial-continuum result that enters the primary 10%
+window. It should still be reported with reference sensitivity: Zn is `+10.47%`
+versus the `225` Group XII present-calculation value, Cd is `+11.98%` versus the
+`466` measurement, and both remain far below the high `359/686` QDO/CCSD(T)
+stress references.
+
+Sr is now a warning/control case for finite-basis core-response basis
+sensitivity. The original def2 core response gave an unphysical correction
+(`2733 -> 9268`, about `+192%` vs `3170`), while `ano-rcc` core channels give a
+reasonable sanity check (`2733 -> 3120`, about `-1.6%`; TRK-normalized
+`2733 -> 2977`, about `-6.1%`). This indicates that the Sr shell partition is
+clean, but finite-basis core-response basis choice can dominate the correction.
+
 ## 7. Near-Term Roadmap
 
 Next steps:

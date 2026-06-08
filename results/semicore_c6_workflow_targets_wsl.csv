@@ -1,0 +1,2 @@
+atom,dimer,workflow_status,pseudo_name,basis_label,basis_block_name,basis_file,pseudo_file,candidate_status,active_electrons,active_shells,expected_active_shells,correction_shells,target_audit_status,note
+Sr,Sr2,candidate_ready,GTH-PBE-q2,QZVPP-MOLOPT-PBE-GTH-q10-as-q2-adapted,QZVPP-MOLOPT-PBE-GTH-q10,external_data/cp2k/BASIS_MOLOPT_UZH,external_data/cp2k/POTENTIAL_UZH_CASR_Q2,tddft_smoke_ok,2,5s,5s,4p;4s,pass,nelectron=2; nao=63; tddft_states=3; Sr q10 UZH QZVPP basis tested as a q2 candidate only; not library-native matched q2.

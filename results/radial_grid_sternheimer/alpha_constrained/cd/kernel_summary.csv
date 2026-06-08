@@ -1,0 +1,2 @@
+atom,alpha0_psp,alpha0_core_unconstrained,alpha0_reference,alpha0_uncertainty,local_field_scale,alpha0_corrected,C6_PSP,C6_PSP_plus_alpha_constrained_CPHF,C6_reference,reference_error_pct,go_no_go,scaled_core_channels,alpha_reference_source
+Cd,37.43552126,4.61559796,45.68,1.21,1.7862211595223079,45.68000000,271.0878142,521.83584539,493.0,5.849055860040575,go,results/radial_grid_sternheimer/alpha_constrained/cd/cd_alpha_constrained_cphf_channels.csv,recommended group-12 static polarizability; arXiv:2411.05394v2 / PCCP 2025

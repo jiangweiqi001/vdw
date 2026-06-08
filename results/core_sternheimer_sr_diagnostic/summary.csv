@@ -1,0 +1,4 @@
+atom,basis,correction_shells,n_channels,sum_osc,expected_core_electrons,sum_osc_over_expected,alpha0_core,C6_self_core,channels_path
+Sr,def2-TZVP,4p;4s,17,12.014032534597208,8,1.501754066824651,91.93794542,2214.02796704,results/core_sternheimer_sr_diagnostic/channels/sr_def2_TZVP_core_channels.csv
+Sr,def2-TZVPP,4p;4s,17,12.01403253460323,8,1.5017540668254037,91.93794542,2214.02796704,results/core_sternheimer_sr_diagnostic/channels/sr_def2_TZVPP_core_channels.csv
+Sr,ano-rcc,4p;4s,105,12.286775533641688,8,1.535846941705211,6.02949976,36.13252446,results/core_sternheimer_sr_diagnostic/channels/sr_ano_rcc_core_channels.csv

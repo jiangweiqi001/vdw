@@ -1,0 +1,9 @@
+atom,variant,C6_PSP,C6_all_e_proxy,proxy_label,source,Delta_C6_core,missing_C6_proxy_minus_PSP,closure_pct
+Cd,raw_finite_basis,271.0878142,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,237.30041167,221.91218579999997,106.93437623288915
+Cd,trk_normalized,271.0878142,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,93.78665167,221.91218579999997,42.26295700341842
+Cd,raw_finite_basis,271.0878142,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,237.30041167,194.91218579999997,121.74734519343737
+Cd,trk_normalized,271.0878142,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,93.78665167,194.91218579999997,48.11738747121474
+Cd,raw_finite_basis,271.0878142,686.0,QDO/CCSD(T) table,arXiv:2104.13335 / QDO table,237.30041167,414.9121858,57.192924139467394
+Cd,trk_normalized,271.0878142,686.0,QDO/CCSD(T) table,arXiv:2104.13335 / QDO table,93.78665167,414.9121858,22.603976185748362
+Cd,raw_finite_basis,271.0878142,811.85667754,ano-rcc TDHF candidate,local AtomSphAverageRHF + TDHF / ano-rcc / nstates=80,237.30041167,540.7688633399999,43.88204050883031
+Cd,trk_normalized,271.0878142,811.85667754,ano-rcc TDHF candidate,local AtomSphAverageRHF + TDHF / ano-rcc / nstates=80,93.78665167,540.7688633399999,17.343204838151546

@@ -1,0 +1,10 @@
+atom,method,basis,nstates,status,alpha0,C6,note
+Zn,HF_TDHF,def2-TZVPP,200,ok,52.48204098,400.46090918,"AtomSphAverageRHF + TDHF converged; useful controlled HF/TDHF all-electron reference, but over 359 literature reference by about 11.5%."
+Cd,KS_TDDFT_PBE,def2-TZVPP,200,scf_failed,,,Default RKS-PBE did not converge; no TDDFT channels produced.
+Cd,KS_TDDFT_PBE_newton,def2-TZVPP,100,scf_failed,,,"Newton RKS-PBE did not converge: E=-1712.0366495001972, nelec=48, nao=56."
+Cd,HF_TDHF,def2-TZVPP,200,response_failed,,,"AtomSphAverageRHF converged, but full TDHF failed with non-positive-definite response metric."
+Cd,HF_TDHF,def2-TZVP,200,response_failed,,,Smaller basis did not fix full TDHF; response metric still non-positive-definite.
+Cd,HF_TDA,def2-TZVPP,200,diagnostic_only,69.77372358,1853.51074879,Stable but far above Cd literature C6 scale; do not use for go/no-go closure.
+Cd,HF_TDHF,ano-rcc,80,ok,86.29549124,811.85667754,"AtomSphAverageRHF + TDHF converged; reasonable all-electron closure candidate, but above 686 reference by about 18.3%."
+Cd,HF_TDA,ano-rcc,80,diagnostic_only,106.69314598,1312.72240541,Stable TDA diagnostic; substantially above TDHF and literature scale.
+Cd,HF_TDHF,sto-3g,80,diagnostic_only,24.68096556,134.88685,Stable but minimal basis strongly underestimates Cd response.

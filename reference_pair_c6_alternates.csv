@@ -1,0 +1,10 @@
+A,B,C6_ref,reference_label,source
+Zn,Zn,225,Group XII present calculation,arXiv:2201.07145 Table 3
+Zn,Zn,257.5,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel/Hohm
+Zn,Zn,276,Benchmark atom data,arXiv:1604.02751 Table 2
+Zn,Zn,359,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table
+Cd,Cd,493,Group XII present calculation,arXiv:2201.07145 Table 3
+Cd,Cd,466,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.
+Cd,Cd,686,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table
+Sr,Sr,3103,High-precision ground-state reference,Porsev et al. / Safronova Sr table ground-state Sr2
+Sr,Sr,3170,Project Sr smoke reference,Existing semicore Sr validation smoke reference

@@ -1,0 +1,43 @@
+atom,basis_label,basis_provenance,model,C6_model,C6_ref,reference_label,source,error_pct
+Cd,QZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp,271.0878142,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,-45.01261375253549
+Cd,QZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp,271.0878142,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,-41.82664931330471
+Cd,QZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp,271.0878142,686.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-60.48282591836735
+Cd,QZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp_plus_sternheimer,508.38822587,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,3.1213439898580093
+Cd,QZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp_plus_sternheimer,508.38822587,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,9.096185809012873
+Cd,QZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp_plus_sternheimer,508.38822587,686.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-25.890929173469388
+Zn,TZV2P-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,244.46353337,225.0,Group XII present calculation,arXiv:2201.07145 Table 3,8.650459275555553
+Zn,TZV2P-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,244.46353337,257.5,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel/Hohm,-5.0627054873786435
+Zn,TZV2P-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,244.46353337,276.0,Benchmark atom data,arXiv:1604.02751 Table 2,-11.42625602536232
+Zn,TZV2P-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,244.46353337,359.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-31.904308253481897
+Zn,TZV2P-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,285.74743589,225.0,Group XII present calculation,arXiv:2201.07145 Table 3,26.998860395555564
+Zn,TZV2P-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,285.74743589,257.5,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel/Hohm,10.969878015533988
+Zn,TZV2P-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,285.74743589,276.0,Benchmark atom data,arXiv:1604.02751 Table 2,3.5316796702898623
+Zn,TZV2P-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,285.74743589,359.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-20.404613958217265
+Cd,TZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp,171.087742,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,-65.29660405679513
+Cd,TZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp,171.087742,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,-63.28589227467811
+Cd,TZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp,171.087742,686.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-75.06009591836735
+Cd,TZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp_plus_sternheimer,381.31762366,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,-22.653626032454362
+Cd,TZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp_plus_sternheimer,381.31762366,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,-18.1721837639485
+Cd,TZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp_plus_sternheimer,381.31762366,686.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-44.414340574344024
+Zn,TZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,244.46353337,225.0,Group XII present calculation,arXiv:2201.07145 Table 3,8.650459275555553
+Zn,TZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,244.46353337,257.5,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel/Hohm,-5.0627054873786435
+Zn,TZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,244.46353337,276.0,Benchmark atom data,arXiv:1604.02751 Table 2,-11.42625602536232
+Zn,TZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,244.46353337,359.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-31.904308253481897
+Zn,TZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,285.74743589,225.0,Group XII present calculation,arXiv:2201.07145 Table 3,26.998860395555564
+Zn,TZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,285.74743589,257.5,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel/Hohm,10.969878015533988
+Zn,TZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,285.74743589,276.0,Benchmark atom data,arXiv:1604.02751 Table 2,3.5316796702898623
+Zn,TZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,285.74743589,359.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-20.404613958217265
+Zn,DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,240.21003497,225.0,Group XII present calculation,arXiv:2201.07145 Table 3,6.760015542222227
+Zn,DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,240.21003497,257.5,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel/Hohm,-6.714549526213588
+Zn,DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,240.21003497,276.0,Benchmark atom data,arXiv:1604.02751 Table 2,-12.967378634057967
+Zn,DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp,240.21003497,359.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-33.08912674930362
+Zn,DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,281.12429727,225.0,Group XII present calculation,arXiv:2201.07145 Table 3,24.94413212
+Zn,DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,281.12429727,257.5,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel/Hohm,9.174484376699029
+Zn,DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,281.12429727,276.0,Benchmark atom data,arXiv:1604.02751 Table 2,1.8566294456521737
+Zn,DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,psp_plus_sternheimer,281.12429727,359.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-21.69239630362117
+Cd,SVP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp,238.35232005,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,-51.6526734178499
+Cd,SVP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp,238.35232005,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,-48.85143346566523
+Cd,SVP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp,238.35232005,686.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-65.25476384110787
+Cd,SVP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp_plus_sternheimer,459.59138013,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,-6.7765963225152115
+Cd,SVP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp_plus_sternheimer,459.59138013,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,-1.3752403154506427
+Cd,SVP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,psp_plus_sternheimer,459.59138013,686.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-33.00417199271137

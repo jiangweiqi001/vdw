@@ -1,0 +1,5 @@
+atom,dimer,variant,C6_PSP,C6_corrected,Delta_C6_core,relative_delta_pct,C6_all_e,closure_pct,raw_sum_osc,trk_scale,C6_ref,reference_label,source,psp_error_pct,corrected_error_pct,go_no_go
+Sr,Sr2,raw_finite_basis,2733.20284959,9267.53715378,6534.334304190001,239.07242395748995,,,,,3103.0,High-precision ground-state reference,Porsev et al. / Safronova Sr table ground-state Sr2,-11.917407360941029,198.66378194585886,review
+Sr,Sr2,raw_finite_basis,2733.20284959,9267.53715378,6534.334304190001,239.07242395748995,,,,,3170.0,Project Sr smoke reference,Existing semicore Sr validation smoke reference,-13.779089918296533,192.35132977223975,review
+Sr,Sr2,trk_normalized,2733.20284959,6591.75805667,3858.55520708,141.17339324663777,,,12.014032534599,0.665887991976128,3103.0,High-precision ground-state reference,Porsev et al. / Safronova Sr table ground-state Sr2,-11.917407360941029,112.43177752723172,review
+Sr,Sr2,trk_normalized,2733.20284959,6591.75805667,3858.55520708,141.17339324663777,,,12.014032534599,0.665887991976128,3170.0,Project Sr smoke reference,Existing semicore Sr validation smoke reference,-13.779089918296533,107.94189453217666,review

@@ -1,0 +1,15 @@
+atom,dimer,model,C6_model,C6_ref,reference_label,source,error_pct
+Zn,Zn2,psp,244.46353337,225.0,Group XII present calculation,arXiv:2201.07145 Table 3,8.650459275555553
+Zn,Zn2,psp,244.46353337,257.5,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel/Hohm,-5.0627054873786435
+Zn,Zn2,psp,244.46353337,276.0,Benchmark atom data,arXiv:1604.02751 Table 2,-11.42625602536232
+Zn,Zn2,psp,244.46353337,359.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-31.904308253481897
+Zn,Zn2,psp_plus_sternheimer,248.56294425,225.0,Group XII present calculation,arXiv:2201.07145 Table 3,10.47241966666666
+Zn,Zn2,psp_plus_sternheimer,248.56294425,257.5,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel/Hohm,-3.4707012621359277
+Zn,Zn2,psp_plus_sternheimer,248.56294425,276.0,Benchmark atom data,arXiv:1604.02751 Table 2,-9.940962228260874
+Zn,Zn2,psp_plus_sternheimer,248.56294425,359.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-30.762411072423404
+Cd,Cd2,psp,271.0878142,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,-45.01261375253549
+Cd,Cd2,psp,271.0878142,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,-41.82664931330471
+Cd,Cd2,psp,271.0878142,686.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-60.48282591836735
+Cd,Cd2,psp_plus_sternheimer,521.83584539,493.0,Group XII present calculation,arXiv:2201.07145 Table 3,5.849055860040575
+Cd,Cd2,psp_plus_sternheimer,521.83584539,466.0,Group XII measurement,arXiv:2201.07145 Table 3 citing Goebel et al.,11.981941070815457
+Cd,Cd2,psp_plus_sternheimer,521.83584539,686.0,CCSD(T)/QDO table reference,arXiv:2104.13335 Table I / QDO reference table,-23.93063478279883

@@ -1,0 +1,5 @@
+case,C6_PSP,C6_corrected,Delta_C6_core,C6_reference,reference_error_pct,raw_sum_osc,trk_scale,summary_path
+def2-TZVPP raw,2733.20284959,9267.53715378,6534.334304190001,3170.0,192.35132977223975,,,results/semicore_sr_validation/validation/summary.csv
+def2-TZVPP trk_normalized,2733.20284959,6591.75805667,3858.55520708,3170.0,107.94189453217666,12.014032534599,0.665887991976128,results/semicore_sr_validation/validation_trk_normalized/summary.csv
+ano-rcc raw,2733.20284959,3120.00049028,386.7976406900002,3170.0,-1.5772715999999962,,,results/semicore_sr_validation/validation_ano_rcc_core/summary.csv
+ano-rcc trk_normalized,2733.20284959,2976.84121571,243.63836612000023,3170.0,-6.093337043848576,12.28677553364,0.6511065476940452,results/semicore_sr_validation/validation_ano_rcc_core_trk_normalized/summary.csv

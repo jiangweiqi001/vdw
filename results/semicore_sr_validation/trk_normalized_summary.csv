@@ -1,0 +1,2 @@
+atom,dimer,active_electrons,active_shells,correction_shells,C6_PSP,C6_PSP_plus_sternheimer,Delta_C6_core,double_counting_status,target_audit_status,C6_all_e,closure_pct,C6_reference,reference_error_pct,go_no_go,raw_sum_osc,trk_scale
+Sr,Sr2,2,5s,4p;4s,2733.20284959,6591.75805667,3858.55520708,clean,pass,,,3170.0,107.94189453217666,review,12.014032534599,0.665887991976128

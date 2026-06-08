@@ -1,0 +1,7 @@
+atom,basis_file,basis_name,basis_label,basis_provenance,basis_note
+Zn,external_data/cp2k/BASIS_MOLOPT_UZH,TZV2P-MOLOPT-PBE-GTH-q12,TZV2P-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,Zn q12 UZH TZV2P basis confirmed in public CP2K BASIS_MOLOPT_UZH and tested as a q2 candidate only; not library-native matched q2.
+Zn,external_data/cp2k/BASIS_MOLOPT_UZH,TZVP-MOLOPT-PBE-GTH-q12,TZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,Zn q12 UZH TZVP basis confirmed in public CP2K BASIS_MOLOPT_UZH and tested as a q2 candidate only; not library-native matched q2.
+Zn,external_data/cp2k/BASIS_MOLOPT_UZH,DZVP-MOLOPT-PBE-GTH-q12,DZVP-MOLOPT-PBE-GTH-q12-as-q2-adapted,adapted_from_q12,Zn q12 UZH DZVP basis confirmed in public CP2K BASIS_MOLOPT_UZH and tested as a q2 candidate only; not library-native matched q2.
+Cd,external_data/cp2k/BASIS_MOLOPT_UZH,QZVPP-MOLOPT-PBE-GTH-q20,QZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,Cd q20 UZH QZVPP basis tested as a q2 candidate only; not library-native matched q2.
+Cd,external_data/cp2k/BASIS_MOLOPT_UZH,TZVPP-MOLOPT-PBE-GTH-q20,TZVPP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,Cd q20 UZH TZVPP basis tested as a q2 candidate only; not library-native matched q2.
+Cd,external_data/cp2k/BASIS_MOLOPT_UZH,SVP-MOLOPT-PBE-GTH-q20,SVP-MOLOPT-PBE-GTH-q20-as-q2-adapted,adapted_from_q20,Cd q20 UZH SVP basis tested as a q2 candidate only; not library-native matched q2.

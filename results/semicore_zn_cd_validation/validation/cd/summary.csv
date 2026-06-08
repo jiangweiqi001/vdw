@@ -1,0 +1,2 @@
+atom,dimer,active_electrons,active_shells,correction_shells,C6_PSP,C6_PSP_plus_sternheimer,Delta_C6_core,double_counting_status,target_audit_status,C6_all_e,closure_pct,C6_reference,reference_error_pct,go_no_go
+Cd,Cd2,2,5s,4d,271.0878142,508.38822587,237.30041166999996,clean,pass,811.85667754,43.8820405088303,686.0,-25.890929173469388,review

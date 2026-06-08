@@ -1,0 +1,7 @@
+atom,basis,correction_shells,n_channels,sum_osc,expected_core_electrons,sum_osc_over_expected,alpha0_core,C6_self_core,channels_path
+Zn,def2-TZVP,3d,54,19.651741059699063,10,1.9651741059699064,1.3140199,2.21588444,results/core_sternheimer_basis_diagnostic/channels/zn_def2_TZVP_core_channels.csv
+Zn,def2-TZVPP,3d,75,19.445461478684336,10,1.9445461478684336,1.63854853,4.02978415,results/core_sternheimer_basis_diagnostic/channels/zn_def2_TZVPP_core_channels.csv
+Zn,ano-rcc,3d,203,19.071574206483476,10,1.9071574206483475,2.35636116,7.47754127,results/core_sternheimer_basis_diagnostic/channels/zn_ano_rcc_core_channels.csv
+Cd,def2-TZVP,4d,11,0.915877987651733,10,0.0915877987651733,0.14551572,0.03984235,results/core_sternheimer_basis_diagnostic/channels/cd_def2_TZVP_core_channels.csv
+Cd,def2-TZVPP,4d,32,21.7013818911227,10,2.17013818911227,6.86493432,62.63061303,results/core_sternheimer_basis_diagnostic/channels/cd_def2_TZVPP_core_channels.csv
+Cd,ano-rcc,4d,160,23.03617823704568,10,2.3036178237045677,5.18625675,32.39097048,results/core_sternheimer_basis_diagnostic/channels/cd_ano_rcc_core_channels.csv

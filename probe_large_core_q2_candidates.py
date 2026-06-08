@@ -171,11 +171,25 @@ def load_imported_basis_candidates(path, atom=None):
     return rows
 
 
+def _as_list(value):
+    if value is None:
+        return []
+    if isinstance(value, (list, tuple)):
+        return list(value)
+    return [value]
+
+
 def scan_candidates(atoms=None, pseudo_file=DEFAULT_PSEUDO_FILE, basis_files=None, run_tddft=True, imported_basis_candidates=None):
     rows = []
     basis_files = basis_files or DEFAULT_BASIS_FILES
+    pseudo_files = _as_list(pseudo_file) or [DEFAULT_PSEUDO_FILE]
     for atom in atoms or DEFAULT_ATOMS:
-        pseudos = preferred_pseudos(discover_file_headers(pseudo_file, atom, "q2"))
+        pseudo_options = []
+        for source_path in pseudo_files:
+            for pseudo_name in discover_file_headers(source_path, atom, "q2"):
+                pseudo_options.append({"pseudo_file": source_path, "pseudo_name": pseudo_name})
+        pseudo_order = preferred_pseudos([row["pseudo_name"] for row in pseudo_options])
+        pseudo_options = sorted(pseudo_options, key=lambda row: (pseudo_order.index(row["pseudo_name"]), row["pseudo_file"]))
         basis_options = []
         for basis_file in basis_files:
             for basis_name in discover_file_headers(basis_file, atom, "q2"):
@@ -193,41 +207,45 @@ def scan_candidates(atoms=None, pseudo_file=DEFAULT_PSEUDO_FILE, basis_files=Non
             if row.get("atom") == atom:
                 basis_options.append(row)
         basis_options = sorted(basis_options, key=lambda row: basis_rank(row["basis_label"]))
-        if not pseudos:
+        if not pseudo_options:
             rows.append(candidate_status(atom, "", "", False, False, False, "no q2 pseudo found"))
             continue
         if not basis_options:
-            rows.append(candidate_status(atom, pseudos[0], "", False, False, False, "no matched q2 basis found"))
+            row = candidate_status(atom, pseudo_options[0]["pseudo_name"], "", False, False, False, "no matched q2 basis found")
+            row["pseudo_file"] = pseudo_options[0]["pseudo_file"]
+            rows.append(row)
             continue
-        for pseudo_name in pseudos:
+        for pseudo_candidate in pseudo_options:
             for basis_candidate in basis_options:
                 try:
                     can_build, can_run_rks, can_run_tddft, note = smoke_candidate(
                         atom,
-                        pseudo_file,
-                        pseudo_name,
+                        pseudo_candidate["pseudo_file"],
+                        pseudo_candidate["pseudo_name"],
                         basis_candidate["basis_file"],
                         basis_candidate["basis_name"],
                         run_tddft=run_tddft,
                     )
                 except Exception as exc:
-                    rows.append(
-                        candidate_status(
-                            atom,
-                            pseudo_name,
-                            basis_candidate["basis_label"],
-                            False,
-                            False,
-                            False,
-                            f"{type(exc).__name__}: {exc}",
-                            basis_provenance=basis_candidate["basis_provenance"],
-                            basis_note=basis_candidate.get("basis_note", ""),
-                        )
+                    row = candidate_status(
+                        atom,
+                        pseudo_candidate["pseudo_name"],
+                        basis_candidate["basis_label"],
+                        False,
+                        False,
+                        False,
+                        f"{type(exc).__name__}: {exc}",
+                        basis_provenance=basis_candidate["basis_provenance"],
+                        basis_note=basis_candidate.get("basis_note", ""),
                     )
+                    row["basis_file"] = basis_candidate["basis_file"]
+                    row["basis_block_name"] = basis_candidate["basis_name"]
+                    row["pseudo_file"] = pseudo_candidate["pseudo_file"]
+                    rows.append(row)
                     continue
                 row = candidate_status(
                     atom,
-                    pseudo_name,
+                    pseudo_candidate["pseudo_name"],
                     basis_candidate["basis_label"],
                     can_build,
                     can_run_rks,
@@ -238,7 +256,7 @@ def scan_candidates(atoms=None, pseudo_file=DEFAULT_PSEUDO_FILE, basis_files=Non
                 )
                 row["basis_file"] = basis_candidate["basis_file"]
                 row["basis_block_name"] = basis_candidate["basis_name"]
-                row["pseudo_file"] = pseudo_file
+                row["pseudo_file"] = pseudo_candidate["pseudo_file"]
                 rows.append(row)
     return rows
 
@@ -272,7 +290,7 @@ def write_rows(path, rows):
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Probe clean large-core q2 pseudo/basis candidates for a second benchmark.")
     parser.add_argument("--atom", action="append")
-    parser.add_argument("--pseudo-file", default=DEFAULT_PSEUDO_FILE)
+    parser.add_argument("--pseudo-file", action="append")
     parser.add_argument("--basis-file", action="append")
     parser.add_argument("--candidate-basis-csv", action="append")
     parser.add_argument("--no-tddft", action="store_true")
@@ -283,7 +301,7 @@ def main(argv=None):
         imported.extend(load_imported_basis_candidates(path))
     rows = scan_candidates(
         args.atom or DEFAULT_ATOMS,
-        args.pseudo_file,
+        args.pseudo_file or DEFAULT_PSEUDO_FILE,
         args.basis_file or DEFAULT_BASIS_FILES,
         run_tddft=not args.no_tddft,
         imported_basis_candidates=imported,

@@ -2,3 +2,17 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 results/ar/d-aug-cc-pvtz/
+
+# Regenerable semicore workflow intermediates. Keep compact summary CSVs and
+# reference/policy inputs tracked, but ignore channel-heavy outputs.
+results/**/psp_rpa/
+results/**/core_sternheimer/
+results/**/channels/
+results/**/all_e_controls/*/
+!results/**/all_e_controls/attempt_summary.csv
+results/**/validation/**/psp_alpha_c6_table.csv
+results/**/validation/**/psp_plus_sternheimer_alpha_c6_table.csv
+results/**/validation/**/psp_plus_sternheimer_c6_table.csv
+results/**/validation/**/*_psp_plus_sternheimer_channels.csv
+results/radial_grid_sternheimer/*_cphf_channels.csv
+results/radial_grid_sternheimer/alpha_constrained/**/*_cphf_channels.csv
