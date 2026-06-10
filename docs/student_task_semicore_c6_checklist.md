@@ -234,6 +234,27 @@ d10 semicore correction in Zn2 and Cd2.
   the `466` measurement, and both remain far below the high `359/686`
   QDO/CCSD(T)-table stress references.
 
+## Static-Alpha Uncertainty And Closed Caveats
+
+- The uncertainty-propagation runner is `run_alpha_constrained_uncertainty.py`.
+- The uncertainty table is
+  `results/radial_grid_sternheimer/alpha_constrained/uncertainty_summary.csv`.
+- Zn across `alpha0 = 37.95 +/- 0.77`:
+  - `C6 = 244.46 / 248.56 / 263.79` for low / center / high alpha.
+  - The `257.5` measurement remains within 10% across the full alpha window.
+- Cd across `alpha0 = 45.68 +/- 1.21`:
+  - `C6 = 477.79 / 521.84 / 568.38` for low / center / high alpha.
+  - The `493` reference is within 10% at low/center alpha but not high alpha.
+  - The `466` measurement is within 10% only at low alpha.
+- Native matched Zn/Cd q2 basis is closed as blocked: no native matched q2 basis
+  block was found in the local or public CP2K basis files checked here.
+- “All references within 10%” is closed as not a valid single target because the
+  low/primary/high reference sets imply conflicting decision windows.
+- Local Cd all-electron closure is closed as blocked for primary use: stable
+  `ano-rcc` TDHF is too high in alpha/C6, while def2 full TDHF is numerically
+  unstable. Literature C6 and static-alpha references remain the primary proxy
+  controls.
+
 ## Sr Sanity Check
 
 - Sr remains a useful sanity/control case because it exposed severe core-basis

@@ -1140,6 +1140,42 @@ class EftPipelineTests(unittest.TestCase):
         self.assertAlmostEqual(float(rows[0]["local_field_scale"]), 2.0)
         self.assertIn("STATIC_ALPHA_LOCAL_FIELD_CONSTRAINED", rows[0]["source"])
 
+    def test_alpha_constrained_uncertainty_builds_reference_rows(self):
+        from run_alpha_constrained_uncertainty import build_uncertainty_rows
+
+        with TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            psp = tmp_path / "psp.csv"
+            core = tmp_path / "core.csv"
+            alpha_refs = tmp_path / "alpha_refs.csv"
+            pair_refs = tmp_path / "pair_refs.csv"
+            self._write_csv(
+                psp,
+                ["atom", "delta_Ha", "osc"],
+                [{"atom": "Zn", "delta_Ha": "1.0", "osc": "1.0"}],
+            )
+            self._write_csv(
+                core,
+                ["atom", "delta_Ha", "osc"],
+                [{"atom": "Zn", "delta_Ha": "2.0", "osc": "4.0"}],
+            )
+            self._write_csv(
+                alpha_refs,
+                ["atom", "alpha0_ref", "uncertainty", "source"],
+                [{"atom": "Zn", "alpha0_ref": "3.0", "uncertainty": "1.0", "source": "unit"}],
+            )
+            self._write_csv(
+                pair_refs,
+                ["A", "B", "C6_ref", "reference_label", "source"],
+                [{"A": "Zn", "B": "Zn", "C6_ref": "10.0", "reference_label": "unit", "source": "unit"}],
+            )
+
+            rows = build_uncertainty_rows("Zn", psp, core, alpha_refs, pair_refs)
+
+        self.assertEqual([row["alpha_case"] for row in rows], ["low", "center", "high"])
+        self.assertAlmostEqual(float(rows[1]["local_field_scale"]), 2.0)
+        self.assertEqual(rows[1]["reference_label"], "unit")
+
     def test_transition_density_dipole_reconstructs_oscillator_strength(self):
         from compute_multipole_core_wilson import oscillator_from_transition_dipole
 

@@ -19,6 +19,7 @@ Keep these scripts in the repository:
 - `run_core_sternheimer_basis_diagnostic.py`
 - `compute_core_sternheimer_radial_grid.py`
 - `run_radial_cphf_alpha_constrained_validation.py`
+- `run_alpha_constrained_uncertainty.py`
 - `run_semicore_diagnostic_summary.py`
 - `scripts/setup_wsl_pyscf_env.sh`
 - `scripts/run_semicore_sr_smoke.sh`
@@ -85,6 +86,7 @@ Keep these summary CSVs because they are cited by the status/policy docs:
 - `results/radial_grid_sternheimer/alpha_constrained/cd/kernel_summary.csv`
 - `results/radial_grid_sternheimer/alpha_constrained/cd/validation/summary.csv`
 - `results/radial_grid_sternheimer/alpha_constrained/multi_reference_errors.csv`
+- `results/radial_grid_sternheimer/alpha_constrained/uncertainty_summary.csv`
 
 ## Regenerable Intermediates
 

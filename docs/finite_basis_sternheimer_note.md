@@ -256,3 +256,52 @@ XII present-calculation value, and Cd is `+11.98%` versus the `466` measurement,
 while both remain far below the high `359/686` QDO/CCSD(T)-table references.
 Thus the current status is best described as primary-reference `go` with
 alternate-reference sensitivity, not an unconditional final benchmark.
+
+## Static-Alpha Uncertainty Propagation
+
+The remaining alpha-reference sensitivity is now quantified in
+`results/radial_grid_sternheimer/alpha_constrained/uncertainty_summary.csv`.
+The propagation uses the published static polarizability uncertainty, not a C6
+fit:
+
+```text
+Zn alpha window: 37.95 +/- 0.77
+Cd alpha window: 45.68 +/- 1.21
+```
+
+Current readout:
+
+```text
+Zn:
+  alpha low/center/high gives C6 = 244.46 / 248.56 / 263.79.
+  The 257.5 measurement is within 10% across the full alpha window.
+  The 225 low reference is within 10% only at the low-alpha edge.
+  The 359 high-reference stress test remains outside 10%.
+
+Cd:
+  alpha low/center/high gives C6 = 477.79 / 521.84 / 568.38.
+  The 493 present-calculation reference is within 10% at low/center alpha,
+  but outside at high alpha.
+  The 466 measurement is within 10% only at low alpha.
+  The 686 high-reference stress test remains outside 10%.
+```
+
+This closes the uncertainty-propagation gap. The conclusion remains
+primary-reference `go` with quantified alpha/reference sensitivity.
+
+## Closed Caveats
+
+Some previously open items are now closed as blocked or not valid targets for
+this week's proof-of-concept:
+
+- Native matched Zn/Cd q2 basis: blocked. Local CP2K files and public CP2K basis
+  files checked in this workflow did not contain native matched q2 basis blocks
+  for Zn/Cd, so the current result must retain the adapted-basis caveat.
+- All references within 10%: not a valid single target. The `225/257.5/276/359`
+  and `466/493/686` reference sets are mutually inconsistent enough that one
+  method cannot be required to satisfy all of them simultaneously without
+  redefining the decision policy.
+- Local Cd all-electron closure: blocked as a primary control. The stable local
+  `ano-rcc` TDHF run gives a static polarizability and C6 far above the accepted
+  Cd scale; def2 full TDHF attempts are numerically unstable. Literature C6 and
+  static polarizability references are therefore the primary proxy controls.

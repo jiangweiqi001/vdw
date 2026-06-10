@@ -428,6 +428,26 @@ versus the `225` Group XII present-calculation value, Cd is `+11.98%` versus the
 `466` measurement, and both remain far below the high `359/686` QDO/CCSD(T)
 stress references.
 
+Static-alpha uncertainty propagation is recorded in
+`results/radial_grid_sternheimer/alpha_constrained/uncertainty_summary.csv`.
+Using the published alpha windows:
+
+```text
+Zn alpha0 = 37.95 +/- 0.77:
+  C6 = 244.46 / 248.56 / 263.79 for low / center / high alpha.
+  The 257.5 measurement stays within 10% across the alpha window.
+
+Cd alpha0 = 45.68 +/- 1.21:
+  C6 = 477.79 / 521.84 / 568.38 for low / center / high alpha.
+  The 493 reference is within 10% at low/center alpha but not high alpha.
+```
+
+The remaining caveats are now explicit closures rather than open work items:
+native matched Zn/Cd q2 basis is blocked by unavailable CP2K basis blocks; a
+single method cannot be required to hit all mutually inconsistent C6 references
+simultaneously; and local Cd all-electron TDHF is not reliable enough to replace
+literature C6/static-polarizability proxies.
+
 Sr is now a warning/control case for finite-basis core-response basis
 sensitivity. The original def2 core response gave an unphysical correction
 (`2733 -> 9268`, about `+192%` vs `3170`), while `ano-rcc` core channels give a
